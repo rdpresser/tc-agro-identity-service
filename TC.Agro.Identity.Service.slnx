@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/common/" />
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Adapters/" />
+  <Folder Name="/src/Adapters/Driven (Outbound)/" />
+  <Folder Name="/src/Adapters/Driver (Inbound)/">
+    <Project Path="src/Adapters/Inbound/TC.Agro.Identity.Service/TC.Agro.Identity.Service.csproj" Id="3777d88b-282b-4b95-91cb-3420fbbc7998" />
+  </Folder>
+  <Folder Name="/src/Core/" />
+  <Folder Name="/test/" />
+</Solution>
