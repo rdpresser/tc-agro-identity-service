@@ -1,4 +1,4 @@
-# TC Agro Identity Service
+# 🔐 TC Agro Identity Service
 
 Authentication, authorization, and user management for agricultural monitoring platform.
 
