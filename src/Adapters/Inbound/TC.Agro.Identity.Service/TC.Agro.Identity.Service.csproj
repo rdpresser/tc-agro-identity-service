@@ -44,5 +44,4 @@
     <PackageReference Include="WolverineFx.RabbitMQ" />
   </ItemGroup>
 
-
 </Project>
