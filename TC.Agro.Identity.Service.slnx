@@ -1,5 +1,8 @@
 <Solution>
-  <Folder Name="/common/" />
+  <Folder Name="/common/">
+    <Project Path="../../common/src/TC.Agro.Contracts/TC.Agro.Contracts.csproj" />
+    <Project Path="../../common/src/TC.Agro.SharedKernel/TC.Agro.SharedKernel.csproj" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
@@ -8,10 +11,15 @@
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/Adapters/" />
-  <Folder Name="/src/Adapters/Driven (Outbound)/" />
+  <Folder Name="/src/Adapters/Driven (Outbound)/">
+    <Project Path="src/Adapters/Outbound/TC.Agro.Identity.Infrastructure/TC.Agro.Identity.Infrastructure.csproj" Id="f002f870-7d93-423b-8bf3-b6eda4f093a1" />
+  </Folder>
   <Folder Name="/src/Adapters/Driver (Inbound)/">
     <Project Path="src/Adapters/Inbound/TC.Agro.Identity.Service/TC.Agro.Identity.Service.csproj" Id="3777d88b-282b-4b95-91cb-3420fbbc7998" />
   </Folder>
-  <Folder Name="/src/Core/" />
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/TC.Agro.Identity.Application/TC.Agro.Identity.Application.csproj" Id="986e02bd-f06c-42df-8257-027152dbdad6" />
+    <Project Path="src/Core/TC.Agro.Identity.Domain/TC.Agro.Identity.Domain.csproj" Id="0d1ac74f-d444-4ddc-92ee-e22a04e1d7ed" />
+  </Folder>
   <Folder Name="/test/" />
 </Solution>

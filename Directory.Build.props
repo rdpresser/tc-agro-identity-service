@@ -21,11 +21,8 @@
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
-  <!-- Sonar Analyzer (não aplicar em docker-compose projects, etc) -->
-  <ItemGroup Condition="'$(MSBuildProjectExtension)' != '.dcproj'">
-    <PackageReference Include="SonarAnalyzer.CSharp">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+  <!-- Remove SonarAnalyzer from docker-compose projects -->
+  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.dcproj'">
+    <GlobalPackageReference Remove="SonarAnalyzer.CSharp" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\common\src\TC.Agro.SharedKernel\TC.Agro.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\..\Core\TC.Agro.Identity.Application\TC.Agro.Identity.Application.csproj" />
+    <ProjectReference Include="..\..\..\Core\TC.Agro.Identity.Domain\TC.Agro.Identity.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
