@@ -1,14 +1,8 @@
-﻿using Ardalis.Result;
-using TC.Agro.Contracts.Events.Identity;
-using TC.Agro.Identity.Domain.Aggregates;
-using static TC.Agro.Identity.Domain.Aggregates.UserAggregate;
-
-namespace TC.Agro.Identity.Application.UseCases.CreateUser
+﻿namespace TC.Agro.Identity.Application.UseCases.CreateUser
 {
     public static class CreateUserMapper
     {
-        public static Result<UserAggregate> ToAggregate(
-            CreateUserCommand r)
+        public static Result<UserAggregate> ToAggregate(CreateUserCommand r)
         {
             return Create(
                 r.Name,
@@ -32,12 +26,12 @@ namespace TC.Agro.Identity.Application.UseCases.CreateUser
 
         public static UserCreatedIntegrationEvent ToIntegrationEvent(UserCreatedDomainEvent domainEvent)
         => new(
-            domainEvent.AggregateId,
-            domainEvent.Name,
-            domainEvent.Email,
-            domainEvent.Username,
-            domainEvent.Role,
-            domainEvent.OccurredOn
-        );
+                domainEvent.AggregateId,
+                domainEvent.Name,
+                domainEvent.Email,
+                domainEvent.Username,
+                domainEvent.Role,
+                domainEvent.OccurredOn
+            );
     }
 }

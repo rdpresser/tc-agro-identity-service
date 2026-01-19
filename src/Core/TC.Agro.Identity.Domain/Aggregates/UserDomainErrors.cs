@@ -1,6 +1,4 @@
-﻿using TC.Agro.Identity.Domain.Abstractions;
-
-namespace TC.Agro.Identity.Domain.Aggregates
+﻿namespace TC.Agro.Identity.Domain.Aggregates
 {
     [ExcludeFromCodeCoverage]
     public static class UserDomainErrors

@@ -1,6 +1,4 @@
-﻿using TC.Agro.SharedKernel.Application.Ports;
-
-namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
+﻿namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
 {
     public sealed record GetUserByEmailQuery(string Email) : ICachedQuery<UserByEmailResponse>
     {

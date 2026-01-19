@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Diagnostics.CodeAnalysis;
-using TC.Agro.SharedKernel.Domain.Aggregate;
-
-namespace TC.Agro.Identity.Infrastructure.Configurations
+﻿namespace TC.Agro.Identity.Infrastructure.Configurations
 {
     [ExcludeFromCodeCoverage]
     public class Configuration<TEntity> : IEntityTypeConfiguration<TEntity>

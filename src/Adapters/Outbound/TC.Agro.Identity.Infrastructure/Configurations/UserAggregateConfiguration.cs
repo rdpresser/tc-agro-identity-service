@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TC.Agro.Identity.Domain.Aggregates;
-using TC.Agro.Identity.Domain.ValueObjects;
-
-namespace TC.Agro.Identity.Infrastructure.Configurations
+﻿namespace TC.Agro.Identity.Infrastructure.Configurations
 {
     internal sealed class UserAggregateConfiguration : Configuration<UserAggregate>
     {

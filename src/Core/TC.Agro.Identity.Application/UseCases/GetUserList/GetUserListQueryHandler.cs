@@ -1,14 +1,10 @@
-﻿using Ardalis.Result;
-using TC.Agro.Identity.Application.Abstractions.Ports;
-using TC.Agro.SharedKernel.Application.Handlers;
-
-namespace TC.Agro.Identity.Application.UseCases.GetUserList
+﻿namespace TC.Agro.Identity.Application.UseCases.GetUserList
 {
     internal sealed class GetUserListQueryHandler : BaseQueryHandler<GetUserListQuery, IReadOnlyList<UserListResponse>>
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserAggregateRepository _userRepository;
 
-        public GetUserListQueryHandler(IUserRepository userRepository)
+        public GetUserListQueryHandler(IUserAggregateRepository userRepository)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         }

@@ -1,13 +1,8 @@
-﻿using FastEndpoints;
-using TC.Agro.Identity.Application.Abstractions.Ports;
-using TC.Agro.Identity.Domain.ValueObjects;
-using TC.Agro.SharedKernel.Extensions;
-
-namespace TC.Agro.Identity.Application.UseCases.CreateUser
+﻿namespace TC.Agro.Identity.Application.UseCases.CreateUser
 {
     public sealed class CreateUserCommandValidator : Validator<CreateUserCommand>
     {
-        public CreateUserCommandValidator(IUserRepository userRepository)
+        public CreateUserCommandValidator(IUserAggregateRepository userRepository)
         {
             #region Name | Validation Rules
             RuleFor(x => x.Name)

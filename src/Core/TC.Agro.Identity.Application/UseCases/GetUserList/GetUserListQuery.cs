@@ -1,6 +1,4 @@
-﻿using TC.Agro.SharedKernel.Application.Ports;
-
-namespace TC.Agro.Identity.Application.UseCases.GetUserList
+﻿namespace TC.Agro.Identity.Application.UseCases.GetUserList
 {
     public sealed record GetUserListQuery(
         int PageNumber = 1,

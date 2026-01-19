@@ -1,18 +1,11 @@
-﻿using Ardalis.Result;
-using TC.Agro.Identity.Application.Abstractions;
-using TC.Agro.Identity.Application.Abstractions.Ports;
-using TC.Agro.Identity.Domain.Aggregates;
-using TC.Agro.SharedKernel.Application.Handlers;
-using TC.Agro.SharedKernel.Infrastructure.UserClaims;
-
-namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
+﻿namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
 {
     internal sealed class GetUserByEmailQueryHandler : BaseQueryHandler<GetUserByEmailQuery, UserByEmailResponse>
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserAggregateRepository _userRepository;
         private readonly IUserContext _userContext;
 
-        public GetUserByEmailQueryHandler(IUserRepository userRepository, IUserContext userContext)
+        public GetUserByEmailQueryHandler(IUserAggregateRepository userRepository, IUserContext userContext)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));

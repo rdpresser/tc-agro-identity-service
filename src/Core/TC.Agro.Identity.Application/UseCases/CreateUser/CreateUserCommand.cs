@@ -1,6 +1,4 @@
-﻿using TC.Agro.SharedKernel.Application.Commands;
-
-namespace TC.Agro.Identity.Application.UseCases.CreateUser
+﻿namespace TC.Agro.Identity.Application.UseCases.CreateUser
 {
     public sealed record CreateUserCommand(
         string Name,
