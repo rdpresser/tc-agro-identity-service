@@ -1,3 +1,10 @@
-﻿//**//
+﻿global using Ardalis.Result;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Text.RegularExpressions;
+global using TC.Agro.Identity.Domain.ValueObjects;
+global using TC.Agro.SharedKernel.Domain.Aggregate;
+global using TC.Agro.SharedKernel.Domain.Events;
+global using TC.Agro.SharedKernel.Domain.ValueObjects;
+//**//
 using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("TC.Agro.Identity.Unit.Tests")]

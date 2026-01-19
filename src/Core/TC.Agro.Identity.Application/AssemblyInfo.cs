@@ -1,4 +1,5 @@
-﻿global using Microsoft.Extensions.DependencyInjection;
+﻿global using FluentValidation;
+global using Microsoft.Extensions.DependencyInjection;
 global using System.Diagnostics.CodeAnalysis;
 //**//
 using System.Runtime.CompilerServices;

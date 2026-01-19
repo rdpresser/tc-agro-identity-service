@@ -5,7 +5,7 @@
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            ////services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+            services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
             return services;
         }
