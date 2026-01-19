@@ -11,13 +11,33 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copy Directory.Build.props, Directory.Build.targets and Directory.Packages.props first (build optimization)
-COPY services/identity-service/Directory.Build.props ./
-COPY services/identity-service/Directory.Build.targets ./
-COPY services/identity-service/Directory.Packages.props ./
+# From common
+COPY common/Directory.Build.props ./common/
+COPY common/Directory.Build.targets ./common/
+COPY common/Directory.Packages.props ./common/
 
+# From identity-service
+COPY services/identity-service/Directory.Build.props ./services/identity-service/
+COPY services/identity-service/Directory.Build.targets ./services/identity-service/
+COPY services/identity-service/Directory.Packages.props ./services/identity-service/
+
+# Copy shared common projects (required for ProjectReferences)
+COPY ["common/src/TC.Agro.SharedKernel/TC.Agro.SharedKernel.csproj", "common/src/TC.Agro.SharedKernel/"]
+COPY ["common/src/TC.Agro.Contracts/TC.Agro.Contracts.csproj", "common/src/TC.Agro.Contracts/"]
+
+# Copy identity-service projects maintaining directory structure (required for ProjectReferences)
 COPY ["services/identity-service/src/Adapters/Inbound/TC.Agro.Identity.Service/TC.Agro.Identity.Service.csproj", "services/identity-service/src/Adapters/Inbound/TC.Agro.Identity.Service/"]
-RUN dotnet restore "./services/identity-service/src/Adapters/Inbound/TC.Agro.Identity.Service/TC.Agro.Identity.Service.csproj"
+COPY ["services/identity-service/src/Core/TC.Agro.Identity.Application/TC.Agro.Identity.Application.csproj", "services/identity-service/src/Core/TC.Agro.Identity.Application/"]
+COPY ["services/identity-service/src/Core/TC.Agro.Identity.Domain/TC.Agro.Identity.Domain.csproj", "services/identity-service/src/Core/TC.Agro.Identity.Domain/"]
+COPY ["services/identity-service/src/Adapters/Outbound/TC.Agro.Identity.Infrastructure/TC.Agro.Identity.Infrastructure.csproj", "services/identity-service/src/Adapters/Outbound/TC.Agro.Identity.Infrastructure/"]
+
+# Restore packages
+RUN dotnet restore "services/identity-service/src/Adapters/Inbound/TC.Agro.Identity.Service/TC.Agro.Identity.Service.csproj"
+
+# Copy source code maintaining structure
 COPY . .
+
+# Build the application
 WORKDIR "/src/services/identity-service/src/Adapters/Inbound/TC.Agro.Identity.Service"
 RUN dotnet build "./TC.Agro.Identity.Service.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
