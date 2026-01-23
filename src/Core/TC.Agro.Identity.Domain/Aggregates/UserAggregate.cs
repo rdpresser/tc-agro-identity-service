@@ -40,6 +40,55 @@
 
         #endregion
 
+        #region Update Operations
+
+        public Result Update(string name, string username, string? roleValue = null)
+        {
+            var errors = new List<ValidationError>();
+            errors.AddRange(ValidateNameAndUsername(name, username));
+
+            if (!string.IsNullOrWhiteSpace(roleValue))
+            {
+                var roleResult = ValueObjects.Role.Create(roleValue);
+                errors.AddErrorsIfFailure(roleResult);
+            }
+
+            if (errors.Count > 0) return Result.Invalid(errors.ToArray());
+
+            var @event = new UserUpdatedDomainEvent(Id, name, Email.Value, username, DateTimeOffset.UtcNow);
+            ApplyEvent(@event);
+
+            if (!string.IsNullOrWhiteSpace(roleValue))
+            {
+                var roleChangeEvent = new UserRoleChangedDomainEvent(Id, roleValue!, DateTimeOffset.UtcNow);
+                ApplyEvent(roleChangeEvent);
+            }
+
+            return Result.Success();
+        }
+
+        public Result Deactivate()
+        {
+            if (!IsActive)
+                return Result.Invalid(new ValidationError("User.AlreadyDeactivated", "User is already deactivated."));
+
+            var @event = new UserDeactivatedDomainEvent(Id, DateTimeOffset.UtcNow);
+            ApplyEvent(@event);
+            return Result.Success();
+        }
+
+        public Result Activate()
+        {
+            if (IsActive)
+                return Result.Invalid(new ValidationError("User.AlreadyActive", "User is already active."));
+
+            var @event = new UserActivatedDomainEvent(Id, DateTimeOffset.UtcNow);
+            ApplyEvent(@event);
+            return Result.Success();
+        }
+
+        #endregion
+
         #region Domain Events Apply
 
         public void Apply(UserCreatedDomainEvent @event)
@@ -54,17 +103,42 @@
             SetActivate();
         }
 
+        public void Apply(UserUpdatedDomainEvent @event)
+        {
+            Name = @event.Name;
+            Username = @event.Username;
+            SetUpdatedAt(@event.OccurredOn);
+        }
+
+        public void Apply(UserRoleChangedDomainEvent @event)
+        {
+            Role = ValueObjects.Role.Create(@event.NewRole).Value;
+            SetUpdatedAt(@event.OccurredOn);
+        }
+
+        public void Apply(UserDeactivatedDomainEvent @event)
+        {
+            SetDeactivate();
+            SetUpdatedAt(@event.OccurredOn);
+        }
+
+        public void Apply(UserActivatedDomainEvent @event)
+        {
+            SetActivate();
+            SetUpdatedAt(@event.OccurredOn);
+        }
+
         private void ApplyEvent(BaseDomainEvent @event)
         {
             AddNewEvent(@event);
             switch (@event)
             {
                 case UserCreatedDomainEvent createdEvent: Apply(createdEvent); break;
-                    ////case UserUpdatedDomainEvent updatedEvent: Apply(updatedEvent); break;
-                    ////case UserPasswordChangedDomainEvent passwordChangedEvent: Apply(passwordChangedEvent); break;
-                    ////case UserRoleChangedDomainEvent roleChangedEvent: Apply(roleChangedEvent); break;
-                    ////case UserActivatedDomainEvent activatedEvent: Apply(activatedEvent); break;
-                    ////case UserDeactivatedDomainEvent deactivatedEvent: Apply(deactivatedEvent); break;
+                case UserUpdatedDomainEvent updatedEvent: Apply(updatedEvent); break;
+                ////case UserPasswordChangedDomainEvent passwordChangedEvent: Apply(passwordChangedEvent); break;
+                case UserRoleChangedDomainEvent roleChangedEvent: Apply(roleChangedEvent); break;
+                case UserActivatedDomainEvent activatedEvent: Apply(activatedEvent); break;
+                case UserDeactivatedDomainEvent deactivatedEvent: Apply(deactivatedEvent); break;
             }
         }
 
