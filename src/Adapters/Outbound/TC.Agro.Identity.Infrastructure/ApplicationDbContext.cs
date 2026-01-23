@@ -1,4 +1,6 @@
-﻿namespace TC.Agro.Identity.Infrastructure
+﻿using TC.Agro.SharedKernel.Domain.Events;
+
+namespace TC.Agro.Identity.Infrastructure
 {
     [ExcludeFromCodeCoverage]
     public sealed class ApplicationDbContext : DbContext, IUnitOfWork
@@ -41,6 +43,10 @@
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Ignore domain events - they are not persisted as separate entities
+            // Domain events are stored as part of the aggregate root via event sourcing or similar patterns
+            modelBuilder.Ignore<BaseDomainEvent>();
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 

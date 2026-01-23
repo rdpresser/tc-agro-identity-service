@@ -1,30 +1,28 @@
-using TC.Agro.Identity.Service.Extensions;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog as logging provider
 builder.Host.UseCustomSerilog(builder.Configuration);
 
+builder.Services.AddIdentityServices(builder);
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+
 var app = builder.Build();
 
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    await app.CreateMessageDatabase().ConfigureAwait(false);
+}
+
 // Configure the HTTP request pipeline.
-////if (app.Environment.IsDevelopment())
-////{
+app.UseIngressPathBase(app.Configuration);
 
-////}
+// Use metrics authentication middleware extension
+app.UseMetricsAuthentication();
 
-// Health Check Endpoint
-app.MapGet("/health", () =>
-    {
-        return Results.Ok(new
-        {
-            status = "Healthy",
-            timestamp = DateTime.UtcNow,
-            service = "Identity Service"
-        });
-    })
-    .Produces(StatusCodes.Status200OK)
-    .WithName("Health Check")
-    .WithDescription("Verifica a saúde da aplicação");
+app.UseAuthentication()
+  .UseAuthorization()
+  .UseCustomFastEndpoints(app.Configuration)
+  .UseCustomMiddlewares();
 
 await app.RunAsync();

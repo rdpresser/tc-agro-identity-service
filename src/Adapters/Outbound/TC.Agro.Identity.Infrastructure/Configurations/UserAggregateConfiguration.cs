@@ -19,6 +19,10 @@
                     value => Email.FromDb(value)
                 );
 
+            builder.Property(u => u.Username)
+                .IsRequired()
+                .HasMaxLength(200);
+
             builder.Property(u => u.PasswordHash)
                 .IsRequired()
                 .HasMaxLength(200)
