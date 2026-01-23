@@ -8,16 +8,6 @@
             "The user with the specified identifier was not found",
             "User.NotFound");
 
-        public static readonly DomainError UserNotFound = new(
-            "User",
-            "User not found.",
-            "User.NotFound");
-
-        public static readonly DomainError UserNotFoundOrInactive = new(
-            "User",
-            "User not found or is inactive.",
-            "User.NotFoundOrInactive");
-
         public static readonly DomainError InvalidCredentials = new(
             "User|Password",
             "Email or password provided are invalid.",

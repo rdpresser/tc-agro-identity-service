@@ -25,10 +25,4 @@
     <ProjectReference Include="..\..\Core\TC.Agro.Identity.Application\TC.Agro.Identity.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="FluentAssertions" />
-    <Using Include="NSubstitute" />
-    <Using Include="Xunit" />
-  </ItemGroup>
-
 </Project>

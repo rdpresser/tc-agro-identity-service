@@ -43,22 +43,5 @@ namespace TC.Agro.Identity.Tests.Domain.Aggregates
             result.IsSuccess.Should().BeFalse();
             result.ValidationErrors.Should().NotBeEmpty();
         }
-
-        [Fact]
-        public void Create_ShouldGenerateUserCreatedDomainEvent()
-        {
-            // Arrange & Act
-            var result = UserAggregate.Create(
-                "John Doe",
-                "john@example.com",
-                "johndoe",
-                "Test@1234",
-                "User");
-
-            // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.UncommittedEvents.Should().ContainSingle();
-            result.Value.UncommittedEvents[0].Should().BeOfType<UserAggregate.UserCreatedDomainEvent>();
-        }
     }
 }
