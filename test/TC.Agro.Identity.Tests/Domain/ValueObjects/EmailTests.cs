@@ -14,8 +14,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Email.Create(emailValue);
 
             // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Value.Should().Be(emailValue.ToLowerInvariant());
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Value.ShouldBe(emailValue.ToLowerInvariant());
         }
 
         [Theory]
@@ -28,8 +28,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Email.Create(emailValue!);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(e => e.Identifier == "Email.Required");
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldContain(e => e.Identifier == "Email.Required");
         }
 
         [Theory]
@@ -43,8 +43,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Email.Create(emailValue);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(e => e.Identifier == "Email.InvalidFormat");
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldContain(e => e.Identifier == "Email.InvalidFormat");
         }
 
         [Fact]
@@ -57,8 +57,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Email.Create(longEmail);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(e => e.Identifier == "Email.MaximumLength");
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldContain(e => e.Identifier == "Email.MaximumLength");
         }
 
         [Fact]
@@ -71,8 +71,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Email.FromDb(emailValue);
 
             // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Value.Should().Be(emailValue);
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Value.ShouldBe(emailValue);
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             string value = email;
 
             // Assert
-            value.Should().Be("test@example.com");
+            value.ShouldBe("test@example.com");
         }
     }
 }

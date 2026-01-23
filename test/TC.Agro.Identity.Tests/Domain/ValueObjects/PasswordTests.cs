@@ -14,8 +14,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Password.Create(password);
 
             // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Hash.Should().NotBeNullOrEmpty();
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Hash.ShouldNotBeNullOrEmpty();
         }
 
         [Theory]
@@ -28,8 +28,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Password.Create(password!);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(e => e.Identifier == "Password.Required");
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldContain(e => e.Identifier == "Password.Required");
         }
 
         [Theory]
@@ -41,8 +41,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Password.Create(password);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(e => e.Identifier == "Password.TooShort");
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldContain(e => e.Identifier == "Password.TooShort");
         }
 
         [Theory]
@@ -57,8 +57,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Password.Create(password);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(e => e.Identifier == "Password.Weak");
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldContain(e => e.Identifier == "Password.Weak");
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var isValid = passwordResult.Value.Verify(plainPassword);
 
             // Assert
-            isValid.Should().BeTrue();
+            isValid.ShouldBeTrue();
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var isValid = passwordResult.Value.Verify("WrongPassword1!");
 
             // Assert
-            isValid.Should().BeFalse();
+            isValid.ShouldBeFalse();
         }
 
         [Fact]
@@ -99,8 +99,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Password.FromHash(hash);
 
             // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Hash.Should().Be(hash);
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Hash.ShouldBe(hash);
         }
 
         [Theory]
@@ -113,8 +113,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Password.FromHash(hash!);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(e => e.Identifier == "Password.Required");
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldContain(e => e.Identifier == "Password.Required");
         }
     }
 }

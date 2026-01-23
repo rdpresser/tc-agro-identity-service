@@ -16,8 +16,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Role.Create(roleValue);
 
             // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Value.Should().BeOneOf(Role.ValidRoles);
+            result.IsSuccess.ShouldBeTrue();
+            Role.ValidRoles.ShouldContain(result.Value.Value);
         }
 
         [Theory]
@@ -32,27 +32,27 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Role.Create(roleValue!);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(e => e.Identifier == "Role.Invalid");
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldContain(e => e.Identifier == "Role.Invalid");
         }
 
         [Fact]
         public void PredefinedRoles_ShouldHaveCorrectValues()
         {
             // Assert
-            Role.User.Value.Should().Be("User");
-            Role.Admin.Value.Should().Be("Admin");
-            Role.Moderator.Value.Should().Be("Moderator");
+            Role.User.Value.ShouldBe("User");
+            Role.Admin.Value.ShouldBe("Admin");
+            Role.Moderator.Value.ShouldBe("Moderator");
         }
 
         [Fact]
         public void ValidRoles_ShouldContainAllPredefinedRoles()
         {
             // Assert
-            Role.ValidRoles.Should().Contain("User");
-            Role.ValidRoles.Should().Contain("Admin");
-            Role.ValidRoles.Should().Contain("Moderator");
-            Role.ValidRoles.Should().HaveCount(3);
+            Role.ValidRoles.ShouldContain("User");
+            Role.ValidRoles.ShouldContain("Admin");
+            Role.ValidRoles.ShouldContain("Moderator");
+            Role.ValidRoles.Length.ShouldBe(3);
         }
 
         [Fact]
@@ -62,8 +62,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             var result = Role.Create("admin");
 
             // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Value.Should().Be("Admin");
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Value.ShouldBe("Admin");
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             string value = role;
 
             // Assert
-            value.Should().Be("User");
+            value.ShouldBe("User");
         }
     }
 }

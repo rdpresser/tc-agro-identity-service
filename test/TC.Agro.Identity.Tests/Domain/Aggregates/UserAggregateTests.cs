@@ -18,13 +18,13 @@ namespace TC.Agro.Identity.Tests.Domain.Aggregates
             var result = UserAggregate.Create(name, email, username, password, role);
 
             // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Name.Should().Be(name);
-            result.Value.Email.Value.Should().Be(email);
-            result.Value.Username.Should().Be(username);
-            result.Value.Role.Value.Should().Be(role);
-            result.Value.IsActive.Should().BeTrue();
-            result.Value.Id.Should().NotBeEmpty();
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Name.ShouldBe(name);
+            result.Value.Email.Value.ShouldBe(email);
+            result.Value.Username.ShouldBe(username);
+            result.Value.Role.Value.ShouldBe(role);
+            result.Value.IsActive.ShouldBeTrue();
+            result.Value.Id.ShouldNotBe(Guid.Empty);
         }
 
         [Theory]
@@ -40,8 +40,8 @@ namespace TC.Agro.Identity.Tests.Domain.Aggregates
             var result = UserAggregate.Create(name, email, username, password, role);
 
             // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.ValidationErrors.Should().NotBeEmpty();
+            result.IsSuccess.ShouldBeFalse();
+            result.ValidationErrors.ShouldNotBeEmpty();
         }
     }
 }
