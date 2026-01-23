@@ -12,6 +12,7 @@ var app = builder.Build();
 if (!builder.Environment.IsEnvironment("Testing"))
 {
     await app.CreateMessageDatabase().ConfigureAwait(false);
+    await app.ApplyMigrations().ConfigureAwait(false);
 }
 
 // Configure the HTTP request pipeline.

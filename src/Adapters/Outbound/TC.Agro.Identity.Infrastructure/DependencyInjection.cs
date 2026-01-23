@@ -8,6 +8,7 @@
         {
             services.AddScoped<IUserAggregateRepository, UserAggregateRepository>();
             services.AddDbContext<ApplicationDbContext>(contextLifetime: ServiceLifetime.Scoped, optionsLifetime: ServiceLifetime.Scoped);
+            services.AddScoped<IUnitOfWork, ApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
             SharedKernel.Infrastructure.DependencyInjection.AddAgroInfrastructure(services, configuration);
 

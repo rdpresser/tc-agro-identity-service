@@ -1,4 +1,6 @@
-﻿namespace TC.Agro.Identity.Service.Extensions
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace TC.Agro.Identity.Service.Extensions
 {
     [ExcludeFromCodeCoverage]
     internal static class ApplicationBuilderExtensions
@@ -7,6 +9,15 @@
         {
             app.UseMiddleware<ExceptionHandlerMiddleware>();
             return app;
+        }
+
+        // Applies pending migrations to the database
+        public static async Task ApplyMigrations(this IApplicationBuilder app)
+        {
+            using var scope = app.ApplicationServices.CreateScope();
+            await using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            await dbContext.Database.MigrateAsync().ConfigureAwait(false);
         }
 
         // Normalizes PathBase when the service runs behind an ingress with a path prefix (e.g. /user)

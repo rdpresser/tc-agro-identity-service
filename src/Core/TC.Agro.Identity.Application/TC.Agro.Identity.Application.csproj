@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Abstractions\Mappers\" />
     <Folder Include="UseCases\UpdateUser\" />
   </ItemGroup>
 
