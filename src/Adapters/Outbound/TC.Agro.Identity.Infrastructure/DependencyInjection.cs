@@ -1,4 +1,9 @@
-﻿namespace TC.Agro.Identity.Infrastructure
+﻿using Microsoft.Extensions.Options;
+using TC.Agro.Identity.Application.Abstractions.Messaging;
+using TC.Agro.Identity.Infrastructure.Messaging;
+using TC.Agro.SharedKernel.Infrastructure.Database;
+
+namespace TC.Agro.Identity.Infrastructure
 {
     [ExcludeFromCodeCoverage]
     public static class DependencyInjection
@@ -7,8 +12,40 @@
             IConfiguration configuration)
         {
             services.AddScoped<IUserAggregateRepository, UserAggregateRepository>();
-            services.AddDbContext<ApplicationDbContext>(contextLifetime: ServiceLifetime.Scoped, optionsLifetime: ServiceLifetime.Scoped);
-            services.AddScoped<IUnitOfWork, ApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+            
+            // -------------------------------
+            // EF Core
+            // -------------------------------
+            services.AddDbContext<ApplicationDbContext>((sp, opts) =>
+            {
+                var dbFactory = sp.GetRequiredService<DbConnectionFactory>();
+
+                opts.UseNpgsql(dbFactory.ConnectionString, npgsql =>
+                {
+                    npgsql.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default);
+                });
+
+                opts.UseSnakeCaseNamingConvention();
+
+                // Enable lazy loading proxies
+                ////opts.UseLazyLoadingProxies();
+
+                // Use Serilog for EF Core logging
+                opts.LogTo(Log.Logger.Information, LogLevel.Information);
+
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                {
+                    opts.EnableSensitiveDataLogging(true);
+                    opts.EnableDetailedErrors();
+                }
+
+            }, contextLifetime: ServiceLifetime.Scoped, optionsLifetime: ServiceLifetime.Scoped);
+
+            // Unit of Work
+            services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
+
+            // Wolverine Outbox Adapter
+            services.AddScoped<IIntegrationEventOutbox, WolverineEfCoreOutbox>();
 
             SharedKernel.Infrastructure.DependencyInjection.AddAgroInfrastructure(services, configuration);
 

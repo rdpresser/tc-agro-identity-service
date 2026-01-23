@@ -1,6 +1,15 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using JasperFx.Resources;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json.Converters;
+using TC.Agro.Contracts.Events.Identity;
+using TC.Agro.Identity.Infrastructure.Configurations.Data;
 using TC.Agro.SharedKernel.Infrastructure.Caching.HealthCheck;
+using TC.Agro.SharedKernel.Infrastructure.MessageBroker;
+using TC.Agro.SharedKernel.Infrastructure.Messaging;
+using Wolverine.EntityFrameworkCore;
+using Wolverine.ErrorHandling;
+using Wolverine.Postgresql;
+using Wolverine.RabbitMQ;
 
 namespace TC.Agro.Identity.Service.Extensions
 {
@@ -14,7 +23,7 @@ namespace TC.Agro.Identity.Service.Extensions
             // Add Marten configuration only if not testing
             if (!builder.Environment.IsEnvironment("Testing"))
             {
-                ////builder.AddWolverineMessaging(connectionFactory, mqConnectionFactory); -> será usado mais tarde
+                builder.AddWolverineMessaging();
             }
 
             services.AddHttpClient()
@@ -138,73 +147,102 @@ namespace TC.Agro.Identity.Service.Extensions
             return services;
         }
 
-        ////private static WebApplicationBuilder AddWolverineMessaging(this WebApplicationBuilder builder, DbConnectionFactory connectionFactory, RabbitMqConnectionFactory mqConnectionFactory)
-        ////{
-        ////    builder.Host.UseWolverine(opts =>
-        ////    {
-        ////        // -------------------------------
-        ////        // Define schema for Wolverine durability and Postgres persistence
-        ////        // -------------------------------
+        private static WebApplicationBuilder AddWolverineMessaging(this WebApplicationBuilder builder)
+        {
+            builder.Host.UseWolverine(opts =>
+            {
+                opts.UseSystemTextJsonForSerialization();
+                opts.ServiceName = "tc-agro-identity-service";
+                opts.ApplicationAssembly = typeof(Program).Assembly;
 
-        ////        opts.UseSystemTextJsonForSerialization();
-        ////        opts.ApplicationAssembly = typeof(Program).Assembly;
+                // -------------------------------
+                // Durability schema (same database, different schema)
+                // -------------------------------
+                opts.Durability.MessageStorageSchemaName = Schemas.Wolverine;
 
-        ////        opts.Durability.MessageStorageSchemaName = Schemas.Wolverine;
-        ////        opts.ServiceName = "tcagro";
+                // IMPORTANT:
+                // Use the same Postgres DB as EF Core.
+                // This enables transactional outbox with EF Core.
+                opts.PersistMessagesWithPostgresql(
+                    PostgresHelper.Build(builder.Configuration).ConnectionString,
+                    Schemas.Wolverine);
 
-        ////        // -------------------------------
-        ////        // Persist Wolverine messages in Postgres using the same schema
-        ////        // -------------------------------
-        ////        opts.PersistMessagesWithPostgresql(connectionFactory.ConnectionString, Schemas.Wolverine);
+                // -------------------------------
+                // Retry policy
+                // -------------------------------
+                opts.Policies.OnAnyException()
+                    .RetryWithCooldown(
+                        TimeSpan.FromMilliseconds(200),
+                        TimeSpan.FromMilliseconds(400),
+                        TimeSpan.FromMilliseconds(600),
+                        TimeSpan.FromMilliseconds(800),
+                        TimeSpan.FromMilliseconds(1000)
+                    );
 
-        ////        opts.Policies.OnAnyException()
-        ////            .RetryWithCooldown(
-        ////                TimeSpan.FromMilliseconds(200),
-        ////                TimeSpan.FromMilliseconds(400),
-        ////                TimeSpan.FromMilliseconds(600),
-        ////                TimeSpan.FromMilliseconds(800),
-        ////                TimeSpan.FromMilliseconds(1000)
-        ////            );
+                // -------------------------------
+                // Enable durable local queues and auto transaction application
+                // -------------------------------
+                opts.Policies.UseDurableLocalQueues();
+                opts.Policies.AutoApplyTransactions();
+                opts.UseEntityFrameworkCoreTransactions();
 
-        ////        // -------------------------------
-        ////        // Enable durable local queues and auto transaction application
-        ////        // -------------------------------
-        ////        opts.Policies.UseDurableLocalQueues();
-        ////        opts.Policies.AutoApplyTransactions();
+                // -------------------------------
+                // OUTBOX (for sending)
+                // -------------------------------
+                opts.Policies.UseDurableOutboxOnAllSendingEndpoints();
 
-        ////        // -------------------------------
-        ////        // Load and configure message broker
-        ////        // -------------------------------
+                // -------------------------------
+                // INBOX (for receiving) - optional but recommended
+                // -------------------------------
+                // This makes message consumption safe in face of retries/crashes.
+                // It gives "at-least-once safe" processing with deduplication.
+                ////opts.Policies.UseDurableInboxOnAllListeners();
 
-        ////        var rabbitOpts = opts.UseRabbitMq(factory =>
-        ////        {
-        ////            factory.Uri = new Uri(mqConnectionFactory.ConnectionString);
-        ////            factory.VirtualHost = mqConnectionFactory.VirtualHost;
-        ////            factory.ClientProperties["application"] = "TC.Agro.Identity.Service";
-        ////            factory.ClientProperties["environment"] = builder.Environment.EnvironmentName;
-        ////        });
+                // -------------------------------
+                // Load and configure message broker
+                // -------------------------------
+                var mqConnectionFactory = RabbitMqHelper.Build(builder.Configuration);
 
-        ////        if (mqConnectionFactory.AutoProvision) rabbitOpts.AutoProvision();
-        ////        if (mqConnectionFactory.UseQuorumQueues) rabbitOpts.UseQuorumQueues();
-        ////        if (mqConnectionFactory.AutoPurgeOnStartup) rabbitOpts.AutoPurgeOnStartup();
+                var rabbitOpts = opts.UseRabbitMq(factory =>
+                {
+                    factory.Uri = new Uri(mqConnectionFactory.ConnectionString);
+                    factory.VirtualHost = mqConnectionFactory.VirtualHost;
+                    factory.ClientProperties["application"] = opts.ServiceName;
+                    factory.ClientProperties["environment"] = builder.Environment.EnvironmentName;
+                });
 
-        ////        // Durable outbox 
-        ////        opts.Policies.UseDurableOutboxOnAllSendingEndpoints();
+                if (mqConnectionFactory.AutoProvision) rabbitOpts.AutoProvision();
+                if (mqConnectionFactory.UseQuorumQueues) rabbitOpts.UseQuorumQueues();
+                if (mqConnectionFactory.AutoPurgeOnStartup) rabbitOpts.AutoPurgeOnStartup();
 
-        ////        var exchangeName = $"{mqConnectionFactory.Exchange}-exchange";
-        ////        // Register messages
-        ////        opts.PublishMessage<EventContext<UserCreatedIntegrationEvent>>()
-        ////            .ToRabbitExchange(exchangeName)
-        ////            .BufferedInMemory()
-        ////            .UseDurableOutbox();
-        ////    });
+                var exchangeName = $"{mqConnectionFactory.Exchange}-exchange";
 
-        ////    // -------------------------------
-        ////    // Ensure all messaging resources and schema are created at startup
-        ////    // -------------------------------
-        ////    builder.Services.AddResourceSetupOnStartup();
+                // -------------------------------
+                // Publishing example
+                // -------------------------------
+                opts.PublishMessage<EventContext<UserCreatedIntegrationEvent>>()
+                    .ToRabbitExchange(exchangeName)
+                    .BufferedInMemory()
+                    .UseDurableOutbox();
 
-        ////    return builder;
-        ////}
+                // -------------------------------
+                // Receiving (Inbox) - FUTURE USE (commented for now)
+                // -------------------------------
+                // When you want to consume events from other services:
+                //
+                // opts.ListenToRabbitQueue("tc-agro.identity.queue")
+                //     .UseDurableInbox(); // ensures deduplication on receive
+                //
+                // Then create a handler class:
+                // public static Task Handle(FarmCreatedIntegrationEvent evt) { ... }
+            });
+
+            // -------------------------------
+            // Ensure all messaging resources and schema are created at startup
+            // -------------------------------
+            builder.Services.AddResourceSetupOnStartup();
+
+            return builder;
+        }
     }
 }

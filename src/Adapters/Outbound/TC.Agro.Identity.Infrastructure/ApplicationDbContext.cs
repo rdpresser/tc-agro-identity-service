@@ -5,52 +5,21 @@ namespace TC.Agro.Identity.Infrastructure
     [ExcludeFromCodeCoverage]
     public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     {
-        private readonly DbConnectionFactory _dbConnectionFactory;
-
         public DbSet<UserAggregate> Users { get; set; }
 
-        public ApplicationDbContext(DbContextOptions options, DbConnectionFactory dbConnectionFactory)
-            : base(options)
-        {
-            _dbConnectionFactory = dbConnectionFactory;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                base.OnConfiguring(optionsBuilder);
-
-                // Configure the DbContext to use PostgreSQL with the connection string from the provider
-                optionsBuilder.UseNpgsql(_dbConnectionFactory.ConnectionString, npgsqlOptions =>
-                    npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default))
-                .UseSnakeCaseNamingConvention();
-
-                // Enable lazy loading proxies
-                ////optionsBuilder.UseLazyLoadingProxies();
-
-                // Use Serilog for EF Core logging
-                optionsBuilder.LogTo(Log.Logger.Information, LogLevel.Information);
-
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
-                {
-                    optionsBuilder.EnableSensitiveDataLogging(true);
-                    optionsBuilder.EnableDetailedErrors();
-                }
-            }
-        }
+        public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.HasDefaultSchema(Schemas.Default);
+
             // Ignore domain events - they are not persisted as separate entities
             // Domain events are stored as part of the aggregate root via event sourcing or similar patterns
             modelBuilder.Ignore<BaseDomainEvent>();
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-
-            modelBuilder.HasDefaultSchema(Schemas.Default);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);            
         }
     }
 }
