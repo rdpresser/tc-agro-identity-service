@@ -1,9 +1,15 @@
-﻿namespace TC.Agro.Identity.Infrastructure
+﻿using TC.Agro.SharedKernel.Infrastructure.Database;
+using TC.Agro.SharedKernel.Infrastructure.Database.EfCore;
+
+namespace TC.Agro.Identity.Infrastructure
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ApplicationDbContext : DbContext, IUnitOfWork
+    public sealed class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         public DbSet<UserAggregate> Users { get; set; }
+
+        /// <inheritdoc />
+        public DbContext DbContext => this;
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
@@ -11,20 +17,17 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.HasDefaultSchema(Schemas.Default);
+            modelBuilder.HasDefaultSchema(DefaultSchemas.Default);
 
             // Ignore domain events - they are not persisted as separate entities
-            // Domain events are stored as part of the aggregate root via event sourcing or similar patterns
             modelBuilder.Ignore<BaseDomainEvent>();
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
 
-        // Explicit implementation of IUnitOfWork.SaveChangesAsync
-        // This ensures the UnitOfWork pattern works correctly with the DbContext
+        /// <inheritdoc />
         async Task<int> IUnitOfWork.SaveChangesAsync(CancellationToken ct)
         {
-            // Log for debugging (using Serilog directly since logger injection would require constructor changes)
             Log.Debug("ApplicationDbContext.SaveChangesAsync called. ChangeTracker has {Count} entries",
                 ChangeTracker.Entries().Count());
 

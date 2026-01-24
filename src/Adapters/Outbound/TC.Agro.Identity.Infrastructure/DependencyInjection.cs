@@ -19,7 +19,7 @@
 
                 opts.UseNpgsql(dbFactory.ConnectionString, npgsql =>
                 {
-                    npgsql.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default);
+                    npgsql.MigrationsHistoryTable(HistoryRepository.DefaultTableName, DefaultSchemas.Default);
                 });
 
                 opts.UseSnakeCaseNamingConvention();
@@ -43,7 +43,7 @@
 
             // Transactional Outbox (for handlers that publish integration events)
             // Uses Wolverine for atomic EF Core persistence + message publishing
-            services.AddScoped<ITransactionalOutbox, WolverineEfCoreOutbox>();
+            services.AddScoped<ITransactionalOutbox, IdentityOutbox>();
 
             SharedKernel.Infrastructure.DependencyInjection.AddAgroInfrastructure(services, configuration);
 

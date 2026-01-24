@@ -12,7 +12,6 @@ global using TC.Agro.Identity.Application.UseCases.GetUserByEmail;
 global using TC.Agro.Identity.Application.UseCases.GetUserList;
 global using TC.Agro.Identity.Domain.Aggregates;
 global using TC.Agro.Identity.Domain.ValueObjects;
-global using TC.Agro.Identity.Infrastructure.Configurations.Data;
 global using TC.Agro.Identity.Infrastructure.Messaging;
 global using TC.Agro.Identity.Infrastructure.Repositores;
 global using TC.Agro.SharedKernel.Application.Ports;

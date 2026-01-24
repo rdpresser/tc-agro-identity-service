@@ -27,7 +27,7 @@ namespace TC.Agro.Identity.Infrastructure.Migrations
                     role = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     created_at = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     updated_at = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
-                    is_active = table.Column<bool>(type: "boolean", nullable: false)
+                    is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {

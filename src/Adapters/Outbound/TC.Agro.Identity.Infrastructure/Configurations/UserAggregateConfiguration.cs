@@ -1,6 +1,8 @@
-﻿namespace TC.Agro.Identity.Infrastructure.Configurations
+﻿using TC.Agro.SharedKernel.Infrastructure.Database.EfCore;
+
+namespace TC.Agro.Identity.Infrastructure.Configurations
 {
-    internal sealed class UserAggregateConfiguration : Configuration<UserAggregate>
+    internal sealed class UserAggregateConfiguration : BaseEntityConfiguration<UserAggregate>
     {
         public override void Configure(EntityTypeBuilder<UserAggregate> builder)
         {

@@ -22,7 +22,6 @@ global using TC.Agro.Identity.Application;
 global using TC.Agro.Identity.Application.UseCases.CreateUser;
 global using TC.Agro.Identity.Application.UseCases.LoginUser;
 global using TC.Agro.Identity.Infrastructure;
-global using TC.Agro.Identity.Infrastructure.Configurations.Data;
 global using TC.Agro.Identity.Service.Extensions;
 global using TC.Agro.Identity.Service.Middleware;
 global using TC.Agro.Identity.Service.Telemetry;

@@ -145,14 +145,14 @@
                 // -------------------------------
                 // Durability schema (same database, different schema)
                 // -------------------------------
-                opts.Durability.MessageStorageSchemaName = Schemas.Wolverine;
+                opts.Durability.MessageStorageSchemaName = DefaultSchemas.Wolverine;
 
                 // IMPORTANT:
                 // Use the same Postgres DB as EF Core.
                 // This enables transactional outbox with EF Core.
                 opts.PersistMessagesWithPostgresql(
                     PostgresHelper.Build(builder.Configuration).ConnectionString,
-                    Schemas.Wolverine);
+                    DefaultSchemas.Wolverine);
 
                 // -------------------------------
                 // Retry policy
