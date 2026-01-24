@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace TC.Agro.Identity.Service.Extensions
+﻿namespace TC.Agro.Identity.Service.Extensions
 {
     [ExcludeFromCodeCoverage]
     internal static class ApplicationBuilderExtensions
@@ -199,8 +197,8 @@ namespace TC.Agro.Identity.Service.Extensions
                     Predicate = check => check.Tags.Contains("live"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-                // Add Prometheus metrics endpoint
-                ////.UseOpenTelemetryPrometheusScrapingEndpoint("/metrics"); -----------------------> chamada futura
+            // Add Prometheus metrics endpoint
+            ////.UseOpenTelemetryPrometheusScrapingEndpoint("/metrics"); -----------------------> chamada futura
 
             return app;
         }

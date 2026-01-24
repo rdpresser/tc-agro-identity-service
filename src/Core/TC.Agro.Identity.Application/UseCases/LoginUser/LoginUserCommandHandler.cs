@@ -1,6 +1,4 @@
-﻿using TC.Agro.SharedKernel.Infrastructure.Authentication;
-
-namespace TC.Agro.Identity.Application.UseCases.LoginUser
+﻿namespace TC.Agro.Identity.Application.UseCases.LoginUser
 {
     internal sealed class LoginUserCommandHandler : BaseHandler<LoginUserCommand, LoginUserResponse>
     {

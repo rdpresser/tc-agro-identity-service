@@ -1,17 +1,4 @@
-﻿using JasperFx.Resources;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Newtonsoft.Json.Converters;
-using TC.Agro.Contracts.Events.Identity;
-using TC.Agro.Identity.Infrastructure.Configurations.Data;
-using TC.Agro.SharedKernel.Infrastructure.Caching.HealthCheck;
-using TC.Agro.SharedKernel.Infrastructure.MessageBroker;
-using TC.Agro.SharedKernel.Infrastructure.Messaging;
-using Wolverine.EntityFrameworkCore;
-using Wolverine.ErrorHandling;
-using Wolverine.Postgresql;
-using Wolverine.RabbitMQ;
-
-namespace TC.Agro.Identity.Service.Extensions
+﻿namespace TC.Agro.Identity.Service.Extensions
 {
     internal static class ServiceCollectionExtensions
     {

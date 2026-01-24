@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using TC.Agro.Identity.Application.Abstractions.Messaging;
-using TC.Agro.Identity.Infrastructure.Messaging;
-using TC.Agro.SharedKernel.Infrastructure.Database;
-
-namespace TC.Agro.Identity.Infrastructure
+﻿namespace TC.Agro.Identity.Infrastructure
 {
     [ExcludeFromCodeCoverage]
     public static class DependencyInjection
@@ -12,11 +7,13 @@ namespace TC.Agro.Identity.Infrastructure
             IConfiguration configuration)
         {
             services.AddScoped<IUserAggregateRepository, UserAggregateRepository>();
-            
+
             // -------------------------------
-            // EF Core
+            // EF Core with Wolverine Integration
+            // IMPORTANT: Use AddDbContextWithWolverineIntegration instead of AddDbContext
+            // This enables the transactional outbox pattern with Wolverine
             // -------------------------------
-            services.AddDbContext<ApplicationDbContext>((sp, opts) =>
+            services.AddDbContextWithWolverineIntegration<ApplicationDbContext>((sp, opts) =>
             {
                 var dbFactory = sp.GetRequiredService<DbConnectionFactory>();
 
@@ -39,13 +36,14 @@ namespace TC.Agro.Identity.Infrastructure
                     opts.EnableDetailedErrors();
                 }
 
-            }, contextLifetime: ServiceLifetime.Scoped, optionsLifetime: ServiceLifetime.Scoped);
+            });
 
-            // Unit of Work
+            // Unit of Work (for simple handlers that don't need outbox)
             services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
-            // Wolverine Outbox Adapter
-            services.AddScoped<IIntegrationEventOutbox, WolverineEfCoreOutbox>();
+            // Transactional Outbox (for handlers that publish integration events)
+            // Uses Wolverine for atomic EF Core persistence + message publishing
+            services.AddScoped<ITransactionalOutbox, WolverineEfCoreOutbox>();
 
             SharedKernel.Infrastructure.DependencyInjection.AddAgroInfrastructure(services, configuration);
 

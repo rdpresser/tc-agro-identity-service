@@ -35,7 +35,7 @@
                 .IsRequired()
                 .HasMaxLength(20)
                 .HasConversion(
-                    role => role.ToString(),
+                    role => role.Value,
                     value => Role.Create(value)
                 );
 

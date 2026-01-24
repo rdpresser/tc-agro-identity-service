@@ -2,7 +2,7 @@
 {
     public sealed class CreateUserCommandValidator : Validator<CreateUserCommand>
     {
-        public CreateUserCommandValidator(IUserAggregateRepository userRepository)
+        public CreateUserCommandValidator()
         {
             #region Name | Validation Rules
             RuleFor(x => x.Name)
@@ -28,10 +28,9 @@
                     .WithErrorCode($"{nameof(CreateUserCommand.Email)}.Required")
                 .EmailAddress()
                     .WithMessage("Invalid email format.")
-                    .WithErrorCode($"{nameof(CreateUserCommand.Email)}.InvalidFormat")
-                .MustAsync(async (email, cancellation) => !await userRepository.EmailExistsAsync(email, cancellation).ConfigureAwait(false))
-                    .WithMessage("Email already exists.")
-                    .WithErrorCode($"{nameof(CreateUserCommand.Email)}.AlreadyExists");
+                    .WithErrorCode($"{nameof(CreateUserCommand.Email)}.InvalidFormat");
+            // NOTE: Email uniqueness validation is performed in the command handler
+            // to avoid DbContext disposal issues with validator lifetime scoping
 
             #endregion
 
