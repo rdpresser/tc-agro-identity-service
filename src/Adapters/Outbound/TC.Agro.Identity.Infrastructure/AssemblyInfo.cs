@@ -19,6 +19,7 @@ global using TC.Agro.SharedKernel.Domain.Aggregate;
 global using TC.Agro.SharedKernel.Domain.Events;
 global using TC.Agro.SharedKernel.Infrastructure.Authentication;
 global using TC.Agro.SharedKernel.Infrastructure.Database;
+global using TC.Agro.SharedKernel.Infrastructure.Database.EfCore;
 global using Wolverine.EntityFrameworkCore;
 //**//
 using System.Runtime.CompilerServices;

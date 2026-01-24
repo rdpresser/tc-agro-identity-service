@@ -1,7 +1,4 @@
-﻿using TC.Agro.SharedKernel.Infrastructure.Database;
-using TC.Agro.SharedKernel.Infrastructure.Database.EfCore;
-
-namespace TC.Agro.Identity.Infrastructure
+﻿namespace TC.Agro.Identity.Infrastructure
 {
     [ExcludeFromCodeCoverage]
     public sealed class ApplicationDbContext : DbContext, IApplicationDbContext

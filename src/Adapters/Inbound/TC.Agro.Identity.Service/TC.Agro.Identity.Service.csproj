@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- API / Endpoints -->
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="FastEndpoints.Swagger" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Ardalis.Result.AspNetCore" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
 
@@ -20,7 +20,7 @@
     <PackageReference Include="Bogus" />
     <PackageReference Include="DotNetEnv" />
 
-    <!-- EntityFramework Core -->
+    <!-- EntityFramework Core (Design Tools) -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -30,26 +30,18 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     
-    <!-- OpenTelemetry Instrumentation Packages -->
+    <!-- OpenTelemetry Instrumentation -->
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
-
-    <!-- OpenTelemetry OTLP Exporter (Optional - for Grafana Agent fallback) -->
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
-
-    <!-- OpenTelemetry Prometheus Exporter -->
-    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" />
-    
-    <!-- OpenTelemetry Database and Cache Instrumentation -->
     <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" />    
     <PackageReference Include="Npgsql.OpenTelemetry" />
-
-    <!-- FusionCache OpenTelemetry Support -->
     <PackageReference Include="ZiggyCreatures.FusionCache.OpenTelemetry" />
 
-    <!-- Logging and Serialization -->
+    <!-- Logging -->
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Enrichers.Sensitive" />
     <PackageReference Include="Serilog.Enrichers.Span" />
@@ -61,16 +53,11 @@
     <PackageReference Include="WolverineFx.Postgresql" />
     <PackageReference Include="WolverineFx.EntityFrameworkCore" />
     <PackageReference Include="WolverineFx.RabbitMQ" />
-    
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\TC.Agro.Identity.Application\TC.Agro.Identity.Application.csproj" />
     <ProjectReference Include="..\..\Outbound\TC.Agro.Identity.Infrastructure\TC.Agro.Identity.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Endpoints\User\" />
   </ItemGroup>
 
 </Project>

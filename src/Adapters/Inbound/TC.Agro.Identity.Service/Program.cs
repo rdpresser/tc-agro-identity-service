@@ -1,7 +1,11 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog as logging provider
-builder.Host.UseCustomSerilog(builder.Configuration);
+// Configure Serilog as logging provider (using SharedKernel extension)
+builder.Host.UseCustomSerilog(
+    builder.Configuration,
+    TelemetryConstants.ServiceName,
+    TelemetryConstants.ServiceNamespace,
+    TelemetryConstants.Version);
 
 builder.Services.AddIdentityServices(builder);
 builder.Services.AddApplication();

@@ -1,6 +1,4 @@
-﻿using TC.Agro.SharedKernel.Infrastructure.Database.EfCore;
-
-namespace TC.Agro.Identity.Infrastructure.Configurations
+﻿namespace TC.Agro.Identity.Infrastructure.Configurations
 {
     internal sealed class UserAggregateConfiguration : BaseEntityConfiguration<UserAggregate>
     {

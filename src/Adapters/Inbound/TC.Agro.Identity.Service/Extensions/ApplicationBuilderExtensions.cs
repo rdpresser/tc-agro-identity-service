@@ -3,12 +3,6 @@
     [ExcludeFromCodeCoverage]
     internal static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder app)
-        {
-            app.UseMiddleware<ExceptionHandlerMiddleware>();
-            return app;
-        }
-
         // Applies pending migrations to the database
         public static async Task ApplyMigrations(this IApplicationBuilder app)
         {
