@@ -1,0 +1,59 @@
+﻿using TC.Agro.Identity.Application.Abstractions;
+using TC.Agro.Identity.Application.UseCases.GetUserByEmail;
+
+namespace TC.Agro.Identity.Service.Endpoints.User
+{
+    /// <summary>
+    /// Endpoint for retrieving user information by email.
+    /// Uses FastEndpoints route parameter binding instead of JSON body deserialization.
+    /// </summary>
+    public sealed class GetUserByEmailEndpoint : BaseApiEndpoint<GetUserByEmailQuery, UserByEmailResponse>
+    {
+        public override void Configure()
+        {
+            Get("user/by-email/{email}");
+
+            // 🔥 Force FastEndpoints to bind from route params (not JSON body)
+            RequestBinder(new RequestBinder<GetUserByEmailQuery>(BindingSource.RouteValues));
+
+            Roles(AppConstants.UserRole, AppConstants.AdminRole);
+            PreProcessor<QueryCachingPreProcessorBehavior<GetUserByEmailQuery, UserByEmailResponse>>();
+            PostProcessor<QueryCachingPostProcessorBehavior<GetUserByEmailQuery, UserByEmailResponse>>();
+
+            Description(x => x.Produces<UserByEmailResponse>(200)
+                .ProducesProblemDetails()
+                .Produces((int)HttpStatusCode.NotFound)
+                .Produces((int)HttpStatusCode.Forbidden)
+                .Produces((int)HttpStatusCode.Unauthorized));
+
+            Summary(s =>
+            {
+                s.Summary = "Retrieve user details by their email.";
+                s.Description =
+                    "This endpoint retrieves detailed information about a user by their Email. Access is restricted to users with the appropriate role.";
+                s.ExampleRequest = new GetUserByEmailQuery { Email = "John.smith@gmail.com" };
+                s.ResponseExamples[200] = new UserByEmailResponse
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "John Smith",
+                    Username = "johnsmith",
+                    Email = "John.smith@gmail.com",
+                    Role = "Admin"
+                };
+                s.Responses[200] = "Returned when user information is successfully retrieved.";
+                s.Responses[400] = "Returned when the request is invalid.";
+                s.Responses[404] = "Returned when no user is found with the provided Id.";
+                s.Responses[403] = "Returned when the caller lacks the required role to access this endpoint.";
+                s.Responses[401] = "Returned when the request is made without a valid user token.";
+            });
+        }
+
+        public override async Task HandleAsync(GetUserByEmailQuery req, CancellationToken ct)
+        {
+            var response = await req.ExecuteAsync(ct: ct).ConfigureAwait(false);
+
+            // Use the MatchResultAsync method from the base class
+            await MatchResultAsync(response, ct).ConfigureAwait(false);
+        }
+    }
+}
