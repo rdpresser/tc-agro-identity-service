@@ -16,7 +16,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
 
             var projection = await _dbContext.Set<UserAggregate>()
                 .AsNoTracking()
-                .Where(u => u.IsActive && u.Email.Value == email)
+                .Where(u => u.IsActive && EF.Functions.ILike(u.Email.Value, email))
                 .Select(x => new
                 {
                     x.Id,
@@ -46,7 +46,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
         {
             var userAggregate = await _dbContext.Set<UserAggregate>()
                 .AsNoTracking()
-                .SingleOrDefaultAsync(entity => entity.Email.Value == email, cancellationToken)
+                .SingleOrDefaultAsync(entity => EF.Functions.ILike(entity.Email.Value, email), cancellationToken)
                 .ConfigureAwait(false);
 
             if (userAggregate is null)
@@ -78,8 +78,8 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 usersQuery = usersQuery.Where(u =>
                     EF.Functions.ILike(u.Name, pattern) ||
                     EF.Functions.ILike(u.Username, pattern) ||
-                    EF.Functions.Like(u.Email.Value, pattern) ||
-                    EF.Functions.Like(u.Role.Value, pattern)
+                    EF.Functions.ILike(u.Email.Value, pattern) ||
+                    EF.Functions.ILike(u.Role.Value, pattern)
                 );
             }
 
