@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Infrastructure
+namespace TC.Agro.Identity.Infrastructure
 {
     [ExcludeFromCodeCoverage]
     public static class DependencyInjection
@@ -7,6 +7,7 @@
             IConfiguration configuration)
         {
             services.AddScoped<IUserAggregateRepository, UserAggregateRepository>();
+            services.AddScoped<IUserReadStore, UserReadStore>();
 
             // -------------------------------
             // EF Core with Wolverine Integration

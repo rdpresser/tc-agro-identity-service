@@ -1,19 +1,19 @@
-﻿namespace TC.Agro.Identity.Application.UseCases.LoginUser
+namespace TC.Agro.Identity.Application.UseCases.LoginUser
 {
     internal sealed class LoginUserCommandHandler : BaseHandler<LoginUserCommand, LoginUserResponse>
     {
-        private readonly IUserAggregateRepository _repository;
+        private readonly IUserReadStore _readStore;
         private readonly ITokenProvider _tokenProvider;
 
-        public LoginUserCommandHandler(IUserAggregateRepository repository, ITokenProvider tokenProvider)
+        public LoginUserCommandHandler(IUserReadStore readStore, ITokenProvider tokenProvider)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _readStore = readStore ?? throw new ArgumentNullException(nameof(readStore));
             _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
         }
 
         public override async Task<Result<LoginUserResponse>> ExecuteAsync(LoginUserCommand command, CancellationToken ct = default)
         {
-            var userTokenInfo = await _repository
+            var userTokenInfo = await _readStore
                 .GetUserTokenInfoAsync(command.Email, command.Password, ct)
                 .ConfigureAwait(false);
 

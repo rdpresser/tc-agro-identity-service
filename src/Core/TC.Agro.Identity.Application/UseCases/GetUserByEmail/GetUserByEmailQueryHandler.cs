@@ -1,20 +1,18 @@
-﻿namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
+namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
 {
     internal sealed class GetUserByEmailQueryHandler : BaseQueryHandler<GetUserByEmailQuery, UserByEmailResponse>
     {
-        private readonly IUserAggregateRepository _userRepository;
+        private readonly IUserReadStore _userReadStore;
         private readonly IUserContext _userContext;
 
-        public GetUserByEmailQueryHandler(IUserAggregateRepository userRepository, IUserContext userContext)
+        public GetUserByEmailQueryHandler(IUserReadStore userReadStore, IUserContext userContext)
         {
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _userReadStore = userReadStore ?? throw new ArgumentNullException(nameof(userReadStore));
             _userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
         }
 
         public override async Task<Result<UserByEmailResponse>> ExecuteAsync(GetUserByEmailQuery command, CancellationToken ct = default)
         {
-            UserByEmailResponse? userResponse = null;
-
             if (_userContext.Role == AppConstants.UserRole
                 && !_userContext.Email.Equals(command.Email, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -22,9 +20,9 @@
                 return BuildNotAuthorizedResult();
             }
 
-            userResponse = await _userRepository
-                    .GetByEmailAsync(command.Email, ct)
-                    .ConfigureAwait(false);
+            var userResponse = await _userReadStore
+                .GetByEmailAsync(command.Email, ct)
+                .ConfigureAwait(false);
 
             if (userResponse is not null)
                 return userResponse;
