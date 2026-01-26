@@ -11,7 +11,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
         {
             return await DbSet
                 .AsNoTracking()
-                .AnyAsync(userAggregate => userAggregate.Email == Email.FromDb(email), cancellationToken).ConfigureAwait(false);
+                .AnyAsync(userAggregate => userAggregate.Email.Value == email, cancellationToken).ConfigureAwait(false);
         }
     }
 }

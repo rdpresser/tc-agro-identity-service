@@ -20,6 +20,9 @@ namespace TC.Agro.Identity.Infrastructure.Configurations
 
                 email.HasIndex(e => e.Value)
                     .IsUnique();
+
+                // Explicitly configure ownership to avoid EF creating hidden foreign key
+                email.WithOwner();
             });
 
             builder.Property(u => u.Username)
@@ -31,7 +34,7 @@ namespace TC.Agro.Identity.Infrastructure.Configurations
                 .HasMaxLength(200)
                 .HasConversion(
                     password => password.Hash,
-                    value => Password.FromHash(value)
+                    value => Password.FromHash(value).Value  // Unwrap Result<Password>
                 );
 
             builder.OwnsOne(u => u.Role, role =>
@@ -40,13 +43,13 @@ namespace TC.Agro.Identity.Infrastructure.Configurations
                     .HasColumnName("role")
                     .IsRequired()
                     .HasMaxLength(20);
+
+                // Explicitly configure ownership to avoid EF creating hidden foreign key
+                role.WithOwner();
             });
 
             builder.Navigation(u => u.Email).IsRequired();
             builder.Navigation(u => u.Role).IsRequired();
-
-            ////builder.HasIndex("Email_Value")
-            ////    .IsUnique();
         }
     }
 }

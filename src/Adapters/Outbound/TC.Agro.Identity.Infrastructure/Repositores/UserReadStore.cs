@@ -15,7 +15,8 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 return null;
 
             var projection = await _dbContext.Set<UserAggregate>()
-                .Where(u => u.IsActive && u.Email == Email.FromDb(email))
+                .AsNoTracking()
+                .Where(u => u.IsActive && u.Email.Value == email)
                 .Select(x => new
                 {
                     x.Id,
@@ -45,7 +46,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
         {
             var userAggregate = await _dbContext.Set<UserAggregate>()
                 .AsNoTracking()
-                .SingleOrDefaultAsync(entity => entity.Email == Email.FromDb(email), cancellationToken)
+                .SingleOrDefaultAsync(entity => entity.Email.Value == email, cancellationToken)
                 .ConfigureAwait(false);
 
             if (userAggregate is null)
@@ -67,6 +68,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
             CancellationToken cancellationToken = default)
         {
             var usersQuery = _dbContext.Set<UserAggregate>()
+                .AsNoTracking()
                 .Where(u => u.IsActive);
 
             if (!string.IsNullOrWhiteSpace(query.Filter))
