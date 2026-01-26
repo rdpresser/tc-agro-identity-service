@@ -17,10 +17,29 @@
                 .AddCorrelationIdGenerator()
                 .AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>()
                 .AddCaching()
+                .AddCustomCors(builder.Configuration)
                 .AddCustomAuthentication(builder.Configuration)
                 .AddCustomFastEndpoints(builder.Configuration)
                 .AddCustomHealthCheck();
             ////.AddCustomOpenTelemetry(builder, builder.Configuration);------------------> será usado mais tarde
+
+            return services;
+        }
+
+        // CORS Configuration
+        public static IServiceCollection AddCustomCors(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("DefaultCorsPolicy", builder =>
+                {
+                    builder
+                        .SetIsOriginAllowed((host) => true)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
 
             return services;
         }
@@ -142,6 +161,9 @@
                 opts.ServiceName = "tc-agro-identity-service";
                 opts.ApplicationAssembly = typeof(Program).Assembly;
 
+                // Include Application assembly for handlers
+                opts.Discovery.IncludeAssembly(typeof(Application.DependencyInjection).Assembly);
+
                 // -------------------------------
                 // Durability schema (same database, different schema)
                 // -------------------------------
@@ -198,9 +220,12 @@
                     factory.ClientProperties["environment"] = builder.Environment.EnvironmentName;
                 });
 
-                if (mqConnectionFactory.AutoProvision) rabbitOpts.AutoProvision();
-                if (mqConnectionFactory.UseQuorumQueues) rabbitOpts.UseQuorumQueues();
-                if (mqConnectionFactory.AutoPurgeOnStartup) rabbitOpts.AutoPurgeOnStartup();
+                if (mqConnectionFactory.AutoProvision)
+                    rabbitOpts.AutoProvision();
+                if (mqConnectionFactory.UseQuorumQueues)
+                    rabbitOpts.UseQuorumQueues();
+                if (mqConnectionFactory.AutoPurgeOnStartup)
+                    rabbitOpts.AutoPurgeOnStartup();
 
                 var exchangeName = $"{mqConnectionFactory.Exchange}-exchange";
 
