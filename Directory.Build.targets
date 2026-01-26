@@ -15,4 +15,11 @@
   <Target Name="FailIfTargetFrameworkIsNotNet10" BeforeTargets="Build">
     <Error Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'net10.0'" Text="❌ Invalid TargetFramework: $(TargetFramework). Required standard: net10.0" />
   </Target>
+
+  <!-- Suppress NU1608 warnings for CodeAnalysis transitive version conflicts -->
+  <!-- SonarAnalyzer 10.18.0 requires CodeAnalysis 4.14.0, but EF Core 10.0.2 requires 5.0.0 -->
+  <!-- We force 5.0.0 which is backward compatible -->
+  <PropertyGroup>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1608</WarningsNotAsErrors>
+  </PropertyGroup>
 </Project>

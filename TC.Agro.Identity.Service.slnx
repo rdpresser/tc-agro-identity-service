@@ -4,6 +4,7 @@
     <Project Path="../../common/src/TC.Agro.SharedKernel/TC.Agro.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
     <File Path="Directory.Packages.props" />
@@ -21,5 +22,7 @@
     <Project Path="src/Core/TC.Agro.Identity.Application/TC.Agro.Identity.Application.csproj" Id="986e02bd-f06c-42df-8257-027152dbdad6" />
     <Project Path="src/Core/TC.Agro.Identity.Domain/TC.Agro.Identity.Domain.csproj" Id="0d1ac74f-d444-4ddc-92ee-e22a04e1d7ed" />
   </Folder>
-  <Folder Name="/test/" />
+  <Folder Name="/test/">
+    <Project Path="test/TC.Agro.Identity.Tests/TC.Agro.Identity.Tests.csproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" />
+  </Folder>
 </Solution>
