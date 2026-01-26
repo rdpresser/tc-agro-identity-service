@@ -62,29 +62,44 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 userAggregate.Role);
         }
 
-        public async Task<IReadOnlyList<UserListResponse>> GetUserListAsync(GetUserListQuery query, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<UserListResponse>> GetUserListAsync(
+            GetUserListQuery query,
+            CancellationToken cancellationToken = default)
         {
-            var usersQuery = _dbContext.Set<UserAggregate>().Where(u => u.IsActive);
+            var usersQuery = _dbContext.Set<UserAggregate>()
+                .Where(u => u.IsActive);
 
             if (!string.IsNullOrWhiteSpace(query.Filter))
             {
-                var filter = query.Filter.ToLower();
+                var pattern = $"%{query.Filter}%";
+
                 usersQuery = usersQuery.Where(u =>
-                    u.Name.Contains(filter, StringComparison.CurrentCultureIgnoreCase) ||
-                    u.Username.Contains(filter, StringComparison.CurrentCultureIgnoreCase) ||
-                    u.Email.Value.Contains(filter, StringComparison.CurrentCultureIgnoreCase) ||
-                    u.Role.Value.Contains(filter, StringComparison.CurrentCultureIgnoreCase));
+                    EF.Functions.ILike(u.Name, pattern) ||
+                    EF.Functions.ILike(u.Username, pattern) ||
+                    EF.Functions.Like(u.Email.Value, pattern) ||
+                    EF.Functions.Like(u.Role.Value, pattern)
+                );
             }
 
+            // sorting
             if (!string.IsNullOrWhiteSpace(query.SortBy))
             {
                 var isAscending = string.Equals(query.SortDirection, "asc", StringComparison.OrdinalIgnoreCase);
+
                 usersQuery = query.SortBy.ToLower() switch
                 {
                     "name" => isAscending ? usersQuery.OrderBy(u => u.Name) : usersQuery.OrderByDescending(u => u.Name),
                     "username" => isAscending ? usersQuery.OrderBy(u => u.Username) : usersQuery.OrderByDescending(u => u.Username),
-                    "email" => isAscending ? usersQuery.OrderBy(u => u.Email.Value) : usersQuery.OrderByDescending(u => u.Email.Value),
-                    "role" => isAscending ? usersQuery.OrderBy(u => u.Role.Value) : usersQuery.OrderByDescending(u => u.Role.Value),
+
+                    // IMPORTANT: use EF.Property for ValueObjects
+                    "email" => isAscending
+                        ? usersQuery.OrderBy(u => u.Email.Value)
+                        : usersQuery.OrderByDescending(u => u.Email.Value),
+
+                    "role" => isAscending
+                        ? usersQuery.OrderBy(u => u.Role.Value)
+                        : usersQuery.OrderByDescending(u => u.Role.Value),
+
                     _ => usersQuery
                 };
             }
@@ -93,19 +108,17 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 .Skip((query.PageNumber - 1) * query.PageSize)
                 .Take(query.PageSize);
 
-            var userList = await usersQuery
+            return await usersQuery
                 .Select(u => new UserListResponse
                 {
                     Id = u.Id,
                     Name = u.Name,
                     Username = u.Username,
-                    Email = u.Email,
-                    Role = u.Role
+                    Email = u.Email.Value,
+                    Role = u.Role.Value
                 })
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            return userList;
+                .ToListAsync(cancellationToken);
         }
+
     }
 }

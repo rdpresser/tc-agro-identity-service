@@ -5,7 +5,7 @@
     /// Extends SharedKernel's BaseRepository with ApplicationDbContext binding.
     /// </summary>
     public abstract class BaseRepository<TAggregate>
-        : TC.Agro.SharedKernel.Infrastructure.Database.EfCore.BaseRepository<TAggregate, ApplicationDbContext>
+        : BaseRepository<TAggregate, ApplicationDbContext>
         where TAggregate : BaseAggregateRoot
     {
         protected BaseRepository(ApplicationDbContext dbContext) : base(dbContext) { }

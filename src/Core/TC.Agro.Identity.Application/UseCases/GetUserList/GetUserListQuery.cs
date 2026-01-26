@@ -1,13 +1,13 @@
 ﻿namespace TC.Agro.Identity.Application.UseCases.GetUserList
 {
-    public sealed record GetUserListQuery(
-        int PageNumber = 1,
-        int PageSize = 10,
-        string SortBy = "id",
-        string SortDirection = "asc",
-        string Filter = ""
-    ) : ICachedQuery<IReadOnlyList<UserListResponse>>
+    public sealed record GetUserListQuery : ICachedQuery<IReadOnlyList<UserListResponse>>
     {
+        public int PageNumber { get; init; } = 1;
+        public int PageSize { get; init; } = 10;
+        public string SortBy { get; init; } = "id";
+        public string SortDirection { get; init; } = "asc";
+        public string Filter { get; init; } = "";
+
         private string? _cacheKey;
         public string GetCacheKey
         {

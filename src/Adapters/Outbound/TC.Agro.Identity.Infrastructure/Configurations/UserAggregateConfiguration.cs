@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Infrastructure.Configurations
+namespace TC.Agro.Identity.Infrastructure.Configurations
 {
     internal sealed class UserAggregateConfiguration : BaseEntityConfiguration<UserAggregate>
     {
@@ -11,13 +11,16 @@
                 .IsRequired()
                 .HasMaxLength(200);
 
-            builder.Property(u => u.Email)
-                .IsRequired()
-                .HasMaxLength(200)
-                .HasConversion(
-                    email => email.Value.ToUpper(),
-                    value => Email.FromDb(value)
-                );
+            builder.OwnsOne(u => u.Email, email =>
+            {
+                email.Property(e => e.Value)
+                    .HasColumnName("email")
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                email.HasIndex(e => e.Value)
+                    .IsUnique();
+            });
 
             builder.Property(u => u.Username)
                 .IsRequired()
@@ -31,16 +34,19 @@
                     value => Password.FromHash(value)
                 );
 
-            builder.Property(u => u.Role)
-                .IsRequired()
-                .HasMaxLength(20)
-                .HasConversion(
-                    role => role.Value,
-                    value => Role.Create(value)
-                );
+            builder.OwnsOne(u => u.Role, role =>
+            {
+                role.Property(r => r.Value)
+                    .HasColumnName("role")
+                    .IsRequired()
+                    .HasMaxLength(20);
+            });
 
-            builder.HasIndex(u => u.Email)
-                .IsUnique();
+            builder.Navigation(u => u.Email).IsRequired();
+            builder.Navigation(u => u.Role).IsRequired();
+
+            ////builder.HasIndex("Email_Value")
+            ////    .IsUnique();
         }
     }
 }
