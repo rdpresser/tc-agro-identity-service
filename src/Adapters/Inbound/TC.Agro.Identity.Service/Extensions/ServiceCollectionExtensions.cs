@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Service.Extensions
+namespace TC.Agro.Identity.Service.Extensions
 {
     internal static class ServiceCollectionExtensions
     {
@@ -20,8 +20,8 @@
                 .AddCustomCors(builder.Configuration)
                 .AddCustomAuthentication(builder.Configuration)
                 .AddCustomFastEndpoints(builder.Configuration)
-                .AddCustomHealthCheck();
-            ////.AddCustomOpenTelemetry(builder, builder.Configuration);------------------> será usado mais tarde
+                .AddCustomHealthCheck()
+                .AddCustomOpenTelemetry(builder, builder.Configuration);
 
             return services;
         }
@@ -92,9 +92,9 @@
             {
                 o.DocumentSettings = s =>
                 {
-                    s.Title = "TC.CloudGames.Users API";
+                    s.Title = "TC.Agro.Identity Service";
                     s.Version = "v1";
-                    s.Description = "User API for TC.CloudGames";
+                    s.Description = "User API for TC.Agro.Identity.Service";
                     s.MarkNonNullablePropsAsRequired();
                 };
 
@@ -255,6 +255,156 @@
             builder.Services.AddResourceSetupOnStartup();
 
             return builder;
+        }
+
+        // OpenTelemetry Configuration
+        public static IServiceCollection AddCustomOpenTelemetry(
+            this IServiceCollection services,
+            IHostApplicationBuilder builder,
+            IConfiguration configuration)
+        {
+            var serviceVersion = typeof(Program).Assembly.GetName().Version?.ToString() ?? TelemetryConstants.Version;
+            var environment = configuration["ASPNETCORE_ENVIRONMENT"] ?? "Development";
+            var instanceId = Environment.MachineName;
+            var serviceName = TelemetryConstants.ServiceName;
+            var serviceNamespace = TelemetryConstants.ServiceNamespace;
+
+            builder.Logging.AddOpenTelemetry(logging =>
+            {
+                logging.IncludeFormattedMessage = true;
+                logging.IncludeScopes = true;
+            });
+
+            var otelBuilder = services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource
+                    .AddService(
+                        serviceName: serviceName,
+                        serviceNamespace: serviceNamespace,
+                        serviceVersion: serviceVersion,
+                        serviceInstanceId: instanceId)
+                    .AddAttributes(new Dictionary<string, object>
+                    {
+                        ["deployment.environment"] = environment.ToLowerInvariant(),
+                        ["service.namespace"] = serviceNamespace.ToLowerInvariant(),
+                        ["service.instance.id"] = instanceId,
+                        ["container.name"] = Environment.GetEnvironmentVariable("HOSTNAME") ?? instanceId,
+                        ["host.provider"] = "localhost",
+                        ["host.platform"] = "k3d_kubernetes_service",
+                        ["service.team"] = "engineering",
+                        ["service.owner"] = "devops"
+                    }))
+                .WithMetrics(metrics =>
+                {
+                    metrics
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddRuntimeInstrumentation()
+                        .AddFusionCacheInstrumentation()
+                        .AddNpgsqlInstrumentation()
+                        .AddMeter("Microsoft.AspNetCore.Hosting")
+                        .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+                        .AddMeter("System.Net.Http")
+                        .AddMeter("System.Runtime")
+                        .AddMeter("Wolverine")
+                        .AddMeter(TelemetryConstants.IdentityMeterName)
+                        .AddPrometheusExporter();
+                })
+                .WithTracing(tracing =>
+                {
+                    tracing
+                        .AddAspNetCoreInstrumentation(options =>
+                        {
+                            options.Filter = ctx =>
+                            {
+                                var path = ctx.Request.Path.Value ?? "";
+                                return !path.Contains("/health") && !path.Contains("/metrics") && !path.Contains("/prometheus");
+                            };
+
+                            options.EnrichWithHttpRequest = (activity, request) =>
+                            {
+                                activity.SetTag("http.method", request.Method);
+                                activity.SetTag("http.scheme", request.Scheme);
+                                activity.SetTag("http.host", request.Host.Value);
+                                activity.SetTag("http.target", request.Path);
+                                if (request.ContentLength.HasValue)
+                                    activity.SetTag("http.request.size", request.ContentLength.Value);
+                                activity.SetTag("user.id", request.HttpContext.User?.Identity?.Name);
+                                activity.SetTag("user.authenticated", request.HttpContext.User?.Identity?.IsAuthenticated);
+                                activity.SetTag("http.route", request.HttpContext.GetRouteValue("action")?.ToString());
+                                activity.SetTag("http.client_ip", request.HttpContext.Connection.RemoteIpAddress?.ToString());
+                            };
+
+                            options.EnrichWithHttpResponse = (activity, response) =>
+                            {
+                                activity.SetTag("http.status_code", response.StatusCode);
+                                if (response.ContentLength.HasValue)
+                                    activity.SetTag("http.response.size", response.ContentLength.Value);
+                            };
+
+                            options.EnrichWithException = (activity, ex) =>
+                            {
+                                activity.SetTag("exception.type", ex.GetType().Name);
+                                activity.SetTag("exception.message", ex.Message);
+                                activity.SetTag("exception.stacktrace", ex.StackTrace);
+                            };
+                        })
+                        .AddHttpClientInstrumentation(options =>
+                        {
+                            options.FilterHttpRequestMessage = request =>
+                            {
+                                var path = request.RequestUri?.AbsolutePath ?? "";
+                                return !path.Contains("/health") && !path.Contains("/metrics") && !path.Contains("/prometheus");
+                            };
+                        })
+                        .AddFusionCacheInstrumentation()
+                        .AddNpgsql()
+                        .AddSource(TelemetryConstants.UserActivitySource)
+                        .AddSource(TelemetryConstants.DatabaseActivitySource)
+                        .AddSource(TelemetryConstants.CacheActivitySource)
+                        .AddSource("Wolverine");
+                });
+
+            AddOpenTelemetryExporters(otelBuilder, builder);
+
+            return services;
+        }
+
+        private static void AddOpenTelemetryExporters(OpenTelemetryBuilder otelBuilder, IHostApplicationBuilder builder)
+        {
+            var grafanaSettings = GrafanaHelper.Build(builder.Configuration);
+            var useOtlpExporter = grafanaSettings.Agent.Enabled && !string.IsNullOrWhiteSpace(grafanaSettings.Otlp.Endpoint);
+
+            if (useOtlpExporter)
+            {
+                otelBuilder.WithTracing(tracerBuilder =>
+                {
+                    tracerBuilder.AddOtlpExporter(otlp =>
+                    {
+                        otlp.Endpoint = new Uri(grafanaSettings.ResolveEndpoint());
+                        otlp.Protocol = grafanaSettings.Otlp.Protocol.ToLowerInvariant() == "grpc"
+                            ? OpenTelemetry.Exporter.OtlpExportProtocol.Grpc
+                            : OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
+
+                        if (!string.IsNullOrWhiteSpace(grafanaSettings.Otlp.Headers))
+                        {
+                            otlp.Headers = grafanaSettings.Otlp.Headers;
+                        }
+
+                        otlp.TimeoutMilliseconds = grafanaSettings.Otlp.TimeoutSeconds * 1000;
+                    });
+                });
+
+                builder.Services.AddSingleton(new TelemetryExporterInfo
+                {
+                    ExporterType = "OTLP",
+                    Endpoint = grafanaSettings.ResolveEndpoint(),
+                    Protocol = grafanaSettings.Otlp.Protocol
+                });
+            }
+            else
+            {
+                builder.Services.AddSingleton(new TelemetryExporterInfo { ExporterType = "None" });
+            }
         }
     }
 }
