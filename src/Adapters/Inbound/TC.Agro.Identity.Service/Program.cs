@@ -28,9 +28,6 @@ app.UseIngressPathBase(app.Configuration);
 // Cross-Origin Resource Sharing (CORS)
 app.UseCors("DefaultCorsPolicy");
 
-// Use metrics authentication middleware extension
-app.UseMetricsAuthentication();
-
 app.UseAuthentication()
   .UseAuthorization()
   .UseCustomFastEndpoints(app.Configuration)

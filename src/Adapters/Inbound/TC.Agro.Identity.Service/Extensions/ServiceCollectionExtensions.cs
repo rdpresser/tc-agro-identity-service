@@ -376,9 +376,29 @@ namespace TC.Agro.Identity.Service.Extensions
 
             if (useOtlpExporter)
             {
+                // Configure OTLP for Traces
                 otelBuilder.WithTracing(tracerBuilder =>
                 {
                     tracerBuilder.AddOtlpExporter(otlp =>
+                    {
+                        otlp.Endpoint = new Uri(grafanaSettings.ResolveEndpoint());
+                        otlp.Protocol = grafanaSettings.Otlp.Protocol.ToLowerInvariant() == "grpc"
+                            ? OpenTelemetry.Exporter.OtlpExportProtocol.Grpc
+                            : OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
+
+                        if (!string.IsNullOrWhiteSpace(grafanaSettings.Otlp.Headers))
+                        {
+                            otlp.Headers = grafanaSettings.Otlp.Headers;
+                        }
+
+                        otlp.TimeoutMilliseconds = grafanaSettings.Otlp.TimeoutSeconds * 1000;
+                    });
+                });
+
+                // Configure OTLP for Logs (NOVO!)
+                otelBuilder.WithLogging(loggingBuilder =>
+                {
+                    loggingBuilder.AddOtlpExporter(otlp =>
                     {
                         otlp.Endpoint = new Uri(grafanaSettings.ResolveEndpoint());
                         otlp.Protocol = grafanaSettings.Otlp.Protocol.ToLowerInvariant() == "grpc"

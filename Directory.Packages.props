@@ -19,7 +19,6 @@
     <PackageVersion Include="FastEndpoints.Swagger" Version="7.2.0" />
     <PackageVersion Include="FastEndpoints.Testing" Version="7.2.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
     <!-- ========================= -->
     <!-- Resilience -->
     <!-- ========================= -->
@@ -27,6 +26,7 @@
     <!-- ========================= -->
     <!-- Logging -->
     <!-- ========================= -->
+    <PackageVersion Include="Serilog" Version="4.1.1" />
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageVersion Include="Serilog.Enrichers.Sensitive" Version="2.1.0" />
     <PackageVersion Include="Serilog.Enrichers.Span" Version="3.1.0" />
@@ -45,10 +45,10 @@
     <!-- Wolverine -->
     <!-- ========================= -->
     <PackageVersion Include="Weasel.Core" Version="8.4.3" />
-    <PackageVersion Include="WolverineFx" Version="5.12.0" />
-    <PackageVersion Include="WolverineFx.Postgresql" Version="5.12.0" />
-    <PackageVersion Include="WolverineFx.RabbitMQ" Version="5.12.0" />
-    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.12.0" />
+    <PackageVersion Include="WolverineFx" Version="5.12.1" />
+    <PackageVersion Include="WolverineFx.Postgresql" Version="5.12.1" />
+    <PackageVersion Include="WolverineFx.RabbitMQ" Version="5.12.1" />
+    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.12.1" />
     <!-- ========================= -->
     <!-- OpenTelemetry -->
     <!-- ========================= -->
@@ -68,7 +68,6 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
-    <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
