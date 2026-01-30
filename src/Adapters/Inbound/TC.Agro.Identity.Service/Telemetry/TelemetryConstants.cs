@@ -21,7 +21,7 @@ namespace TC.Agro.Identity.Service.Telemetry
         public const string CacheActivitySource = "TC.Agro.Identity.Service.Cache";
 
         // Header Names (standardized)
-        public const string CorrelationIdHeader = "x-correlation-id";
+        public const string CorrelationIdHeader = "X-Correlation-ID";
 
         // Tag Names (using underscores for consistency with Loki labels)
         public const string ServiceComponent = "service.component";
