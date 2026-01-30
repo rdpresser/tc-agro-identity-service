@@ -269,11 +269,10 @@ namespace TC.Agro.Identity.Service.Extensions
             var serviceName = TelemetryConstants.ServiceName;
             var serviceNamespace = TelemetryConstants.ServiceNamespace;
 
-            builder.Logging.AddOpenTelemetry(logging =>
-            {
-                logging.IncludeFormattedMessage = true;
-                logging.IncludeScopes = true;
-            });
+            // NOTE: Serilog handles all logging (no OpenTelemetry logging)
+            // This prevents log duplication and simplifies trace_id/span_id correlation
+            // Serilog.Enrichers.Span automatically adds trace_id/span_id from Activity.Current
+            // ❌ REMOVED: builder.Logging.AddOpenTelemetry() - use Serilog only
 
             var otelBuilder = services.AddOpenTelemetry()
                 .ConfigureResource(resource => resource
@@ -356,6 +355,7 @@ namespace TC.Agro.Identity.Service.Extensions
                                 return !path.Contains("/health") && !path.Contains("/metrics") && !path.Contains("/prometheus");
                             };
                         })
+                        .AddRedisInstrumentation()
                         .AddFusionCacheInstrumentation()
                         .AddNpgsql()
                         .AddSource(TelemetryConstants.UserActivitySource)

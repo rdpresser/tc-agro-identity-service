@@ -47,7 +47,7 @@
     <!-- ========================= -->
     <!-- Wolverine -->
     <!-- ========================= -->
-    <PackageVersion Include="Weasel.Core" Version="8.4.3" />
+    <PackageVersion Include="Weasel.Core" Version="8.5.0" />
     <PackageVersion Include="WolverineFx" Version="5.12.1" />
     <PackageVersion Include="WolverineFx.Postgresql" Version="5.12.1" />
     <PackageVersion Include="WolverineFx.RabbitMQ" Version="5.12.1" />
