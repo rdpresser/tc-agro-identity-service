@@ -377,11 +377,12 @@ namespace TC.Agro.Identity.Service.Extensions
             if (useOtlpExporter)
             {
                 // Configure OTLP for Traces
+                // NOTE: Traces use /v1/traces endpoint per OTLP specification
                 otelBuilder.WithTracing(tracerBuilder =>
                 {
                     tracerBuilder.AddOtlpExporter(otlp =>
                     {
-                        otlp.Endpoint = new Uri(grafanaSettings.ResolveEndpoint());
+                        otlp.Endpoint = new Uri(grafanaSettings.ResolveTracesEndpoint());
                         otlp.Protocol = grafanaSettings.Otlp.Protocol.ToLowerInvariant() == "grpc"
                             ? OpenTelemetry.Exporter.OtlpExportProtocol.Grpc
                             : OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
@@ -396,11 +397,12 @@ namespace TC.Agro.Identity.Service.Extensions
                 });
 
                 // Configure OTLP for Metrics
+                // NOTE: Metrics use /v1/metrics endpoint per OTLP specification
                 otelBuilder.WithMetrics(metricsBuilder =>
                 {
                     metricsBuilder.AddOtlpExporter(otlp =>
                     {
-                        otlp.Endpoint = new Uri(grafanaSettings.ResolveEndpoint());
+                        otlp.Endpoint = new Uri(grafanaSettings.ResolveMetricsEndpoint());
                         otlp.Protocol = grafanaSettings.Otlp.Protocol.ToLowerInvariant() == "grpc"
                             ? OpenTelemetry.Exporter.OtlpExportProtocol.Grpc
                             : OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
@@ -415,11 +417,12 @@ namespace TC.Agro.Identity.Service.Extensions
                 });
 
                 // Configure OTLP for Logs
+                // NOTE: Logs use /v1/logs endpoint per OTLP specification
                 otelBuilder.WithLogging(loggingBuilder =>
                 {
                     loggingBuilder.AddOtlpExporter(otlp =>
                     {
-                        otlp.Endpoint = new Uri(grafanaSettings.ResolveEndpoint());
+                        otlp.Endpoint = new Uri(grafanaSettings.ResolveLogsEndpoint());
                         otlp.Protocol = grafanaSettings.Otlp.Protocol.ToLowerInvariant() == "grpc"
                             ? OpenTelemetry.Exporter.OtlpExportProtocol.Grpc
                             : OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
@@ -436,7 +439,7 @@ namespace TC.Agro.Identity.Service.Extensions
                 builder.Services.AddSingleton(new TelemetryExporterInfo
                 {
                     ExporterType = "OTLP",
-                    Endpoint = grafanaSettings.ResolveEndpoint(),
+                    Endpoint = grafanaSettings.ResolveTracesEndpoint(),
                     Protocol = grafanaSettings.Otlp.Protocol
                 });
             }
