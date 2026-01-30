@@ -158,7 +158,7 @@ namespace TC.Agro.Identity.Service.Extensions
             builder.Host.UseWolverine(opts =>
             {
                 opts.UseSystemTextJsonForSerialization();
-                opts.ServiceName = "tc-agro-identity-service";
+                opts.ServiceName = "tc-agro-identity";
                 opts.ApplicationAssembly = typeof(Program).Assembly;
 
                 // Include Application assembly for handlers
