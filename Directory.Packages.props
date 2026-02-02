@@ -6,7 +6,7 @@
     <!-- ========================= -->
     <!-- Code Quality / Analyzers -->
     <!-- ========================= -->
-    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.18.0.131500">
+    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.19.0.132793">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </GlobalPackageReference>
