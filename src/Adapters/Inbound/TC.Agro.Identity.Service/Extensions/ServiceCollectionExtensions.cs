@@ -21,7 +21,10 @@ namespace TC.Agro.Identity.Service.Extensions
                 .AddCustomAuthentication(builder.Configuration)
                 .AddCustomFastEndpoints(builder.Configuration)
                 .AddCustomHealthCheck()
-                .AddCustomOpenTelemetry(builder, builder.Configuration);
+                .AddCustomOpenTelemetry(builder, builder.Configuration)
+                // ENHANCED: Register telemetry metrics
+                .AddSingleton<UserMetrics>()
+                .AddSingleton<SystemMetrics>();
 
             return services;
         }
@@ -132,20 +135,40 @@ namespace TC.Agro.Identity.Service.Extensions
 
         private static IServiceCollection AddCaching(this IServiceCollection services)
         {
-            // Add FusionCache for caching
+            // Add FusionCache with Redis backplane for distributed cache coherence
             services.AddFusionCache()
                 .WithDefaultEntryOptions(options =>
                 {
+                    // L1 (Memory) cache duration - shorter to reduce incoherence window
                     options.Duration = TimeSpan.FromSeconds(20);
-                    options.DistributedCacheDuration = TimeSpan.FromSeconds(30);
+
+                    // L2 (Redis) cache duration - longer for persistence
+                    options.DistributedCacheDuration = TimeSpan.FromSeconds(60);
+
+                    // Reduce memory cache duration to mitigate incoherence
+                    options.MemoryCacheDuration = TimeSpan.FromSeconds(10);
                 })
                 .WithDistributedCache(sp =>
                 {
                     var cacheProvider = sp.GetRequiredService<ICacheProvider>();
 
-                    var options = new RedisCacheOptions { Configuration = cacheProvider.ConnectionString, InstanceName = cacheProvider.InstanceName };
+                    var options = new RedisCacheOptions
+                    {
+                        Configuration = cacheProvider.ConnectionString,
+                        InstanceName = cacheProvider.InstanceName
+                    };
 
                     return new RedisCache(options);
+                })
+                .WithBackplane(sp =>
+                {
+                    var cacheProvider = sp.GetRequiredService<ICacheProvider>();
+
+                    // Create Redis backplane for cache coherence across multiple pods
+                    return new RedisBackplane(new RedisBackplaneOptions
+                    {
+                        Configuration = cacheProvider.ConnectionString
+                    });
                 })
                 .WithSerializer(new FusionCacheSystemTextJsonSerializer())
                 .AsHybridCache();
@@ -331,6 +354,25 @@ namespace TC.Agro.Identity.Service.Extensions
                                 activity.SetTag("user.authenticated", request.HttpContext.User?.Identity?.IsAuthenticated);
                                 activity.SetTag("http.route", request.HttpContext.GetRouteValue("action")?.ToString());
                                 activity.SetTag("http.client_ip", request.HttpContext.Connection.RemoteIpAddress?.ToString());
+
+                                // NEW: Enhanced domain attributes
+                                activity.SetTag("http.endpoint_handler", request.Path);
+                                activity.SetTag("http.query_params", request.QueryString.Value ?? "");
+
+                                // NEW: User context from JWT/Principal
+                                var userId = request.HttpContext.User?.FindFirst("sub")?.Value ??
+                                             request.HttpContext.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                                if (!string.IsNullOrWhiteSpace(userId))
+                                    activity.SetTag("user.id", userId);
+
+                                // NEW: Request correlation ID
+                                if (request.HttpContext.Request.Headers.TryGetValue(TelemetryConstants.CorrelationIdHeader, out var correlationId))
+                                    activity.SetTag("correlation_id", correlationId.ToString());
+
+                                // NEW: User roles
+                                var roles = string.Join(",", request.HttpContext.User?.FindAll(System.Security.Claims.ClaimTypes.Role).Select(c => c.Value) ?? new string[] { });
+                                if (!string.IsNullOrWhiteSpace(roles))
+                                    activity.SetTag("user.roles", roles);
                             };
 
                             options.EnrichWithHttpResponse = (activity, response) =>
@@ -338,6 +380,9 @@ namespace TC.Agro.Identity.Service.Extensions
                                 activity.SetTag("http.status_code", response.StatusCode);
                                 if (response.ContentLength.HasValue)
                                     activity.SetTag("http.response.size", response.ContentLength.Value);
+
+                                // NEW: HTTP status category
+                                activity.SetTag("http.status_category", response.StatusCode >= 400 ? "error" : "success");
                             };
 
                             options.EnrichWithException = (activity, ex) =>
@@ -361,6 +406,8 @@ namespace TC.Agro.Identity.Service.Extensions
                         .AddSource(TelemetryConstants.UserActivitySource)
                         .AddSource(TelemetryConstants.DatabaseActivitySource)
                         .AddSource(TelemetryConstants.CacheActivitySource)
+                        .AddSource(TelemetryConstants.HandlersActivitySource)
+                        .AddSource(TelemetryConstants.FastEndpointsActivitySource)
                         .AddSource("Wolverine");
                 });
 

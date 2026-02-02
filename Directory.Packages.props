@@ -65,6 +65,13 @@
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="10.0.1" />
     <PackageVersion Include="ZiggyCreatures.FusionCache.OpenTelemetry" Version="2.5.0" />
     <!-- ========================= -->
+    <!-- Caching (FusionCache) -->
+    <!-- ========================= -->
+    <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.5.0" />
+    <PackageVersion Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.5.0" />
+    <PackageVersion Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="2.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
+    <!-- ========================= -->
     <!-- EF Core / DB -->
     <!-- ========================= -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />

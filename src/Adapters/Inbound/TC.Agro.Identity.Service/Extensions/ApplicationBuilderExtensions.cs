@@ -1,3 +1,5 @@
+using TC.Agro.Identity.Service.Middleware;
+
 namespace TC.Agro.Identity.Service.Extensions
 {
     [ExcludeFromCodeCoverage]
@@ -174,7 +176,7 @@ namespace TC.Agro.Identity.Service.Extensions
 
             app.UseCustomExceptionHandler()
                 .UseCorrelationMiddleware()
-                ////.UseMiddleware<TelemetryMiddleware>() // Add telemetry middleware after correlation --------------> chamada futura
+                .UseMiddleware<TelemetryMiddleware>() // Add telemetry middleware after correlation to capture correlation ID
                 .UseSerilogRequestLogging()
                 .UseHealthChecks("/health", new HealthCheckOptions
                 {

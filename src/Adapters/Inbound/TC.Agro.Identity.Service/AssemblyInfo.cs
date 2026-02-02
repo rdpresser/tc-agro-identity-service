@@ -28,8 +28,10 @@ global using TC.Agro.Identity.Application.UseCases.CreateUser;
 global using TC.Agro.Identity.Application.UseCases.GetUserList;
 global using TC.Agro.Identity.Application.UseCases.LoginUser;
 global using TC.Agro.Identity.Infrastructure;
+// TC.Agro.Identity.Service namespaces
 global using TC.Agro.Identity.Service.Extensions;
 global using TC.Agro.Identity.Service.Telemetry;
+// TC.Agro.SharedKernel namespaces
 global using TC.Agro.SharedKernel.Api.Endpoints;
 global using TC.Agro.SharedKernel.Api.Extensions;
 global using TC.Agro.SharedKernel.Application.Behaviors;
@@ -42,12 +44,15 @@ global using TC.Agro.SharedKernel.Infrastructure.MessageBroker;
 global using TC.Agro.SharedKernel.Infrastructure.Messaging;
 global using TC.Agro.SharedKernel.Infrastructure.Middleware;
 global using TC.Agro.SharedKernel.Infrastructure.Telemetry;
+// Wolverine
 global using Wolverine;
 global using Wolverine.EntityFrameworkCore;
 global using Wolverine.ErrorHandling;
 global using Wolverine.Postgresql;
 global using Wolverine.RabbitMQ;
+// ZiggyCreatures.Caching.Fusion
 global using ZiggyCreatures.Caching.Fusion;
+global using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
 global using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 //**//
 using System.Runtime.CompilerServices;

@@ -19,6 +19,8 @@ namespace TC.Agro.Identity.Service.Telemetry
         public const string UserActivitySource = "TC.Agro.Identity.Service";
         public const string DatabaseActivitySource = "TC.Agro.Identity.Service.Database";
         public const string CacheActivitySource = "TC.Agro.Identity.Service.Cache";
+        public const string HandlersActivitySource = "TC.Agro.Identity.Handlers";
+        public const string FastEndpointsActivitySource = "TC.Agro.Identity.FastEndpoints";
 
         // Header Names (standardized)
         public const string CorrelationIdHeader = "X-Correlation-ID";
