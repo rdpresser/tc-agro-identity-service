@@ -83,7 +83,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 );
             }
 
-            // sorting
+            // sorting - IMPORTANT: Must have OrderBy before Skip/Take to avoid unpredictable results
             if (!string.IsNullOrWhiteSpace(query.SortBy))
             {
                 var isAscending = string.Equals(query.SortDirection, "asc", StringComparison.OrdinalIgnoreCase);
@@ -102,8 +102,13 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                         ? usersQuery.OrderBy(u => u.Role.Value)
                         : usersQuery.OrderByDescending(u => u.Role.Value),
 
-                    _ => usersQuery
+                    _ => usersQuery.OrderByDescending(u => u.Id)  // Default: order by ID descending
                 };
+            }
+            else
+            {
+                // Default ordering when no sort specified (required for predictable pagination)
+                usersQuery = usersQuery.OrderByDescending(u => u.Id);
             }
 
             usersQuery = usersQuery
