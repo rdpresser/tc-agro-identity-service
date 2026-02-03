@@ -125,7 +125,11 @@ jobs:
         run: |
           SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-8)
           IMAGE_TAG=$SHORT_SHA
-          IMAGE_URI=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE_NAME }}
+          if [ -n "${{ secrets.DOCKERHUB_USERNAME }}" ]; then
+            IMAGE_URI=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE_NAME }}
+          else
+            IMAGE_URI=${{ env.SERVICE_NAME }}
+          fi
 
           echo "tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
