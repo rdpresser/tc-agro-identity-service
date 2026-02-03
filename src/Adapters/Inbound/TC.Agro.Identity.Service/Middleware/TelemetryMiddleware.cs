@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Security.Claims;
 using TC.Agro.Identity.Service.Telemetry;
+using TC.Agro.SharedKernel.Infrastructure.Middleware;
 using Serilog.Context;
 
 namespace TC.Agro.Identity.Service.Middleware
@@ -18,6 +19,8 @@ namespace TC.Agro.Identity.Service.Middleware
     ///
     /// The activity created here becomes the parent for all child spans within the request.
     /// Log entries automatically include trace_id and span_id via Serilog.Enrichers.Span.
+    ///
+    /// Note: Correlation ID is managed by CorrelationMiddleware (must run BEFORE this middleware).
     /// </summary>
     public class TelemetryMiddleware
     {
@@ -38,7 +41,7 @@ namespace TC.Agro.Identity.Service.Middleware
             _systemMetrics = systemMetrics;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, ICorrelationIdGenerator correlationIdGenerator)
         {
             var stopwatch = Stopwatch.StartNew();
             var path = context.Request.Path.Value ?? "/";
@@ -55,8 +58,9 @@ namespace TC.Agro.Identity.Service.Middleware
             var isAuthenticated = context.User?.Identity?.IsAuthenticated ?? false;
             var userRoles = ExtractUserRoles(context);
 
-            // Extract or generate correlation ID
-            var correlationId = ExtractCorrelationId(context);
+            // Get correlation ID from centralized generator (set by CorrelationMiddleware)
+            // CorrelationMiddleware MUST run before TelemetryMiddleware in the pipeline
+            var correlationId = correlationIdGenerator.CorrelationId ?? context.TraceIdentifier ?? "unknown";
 
             // Add to structured logging context (will be included in all logs within this request)
             using (LogContext.PushProperty("correlation_id", correlationId))
@@ -129,9 +133,9 @@ namespace TC.Agro.Identity.Service.Middleware
                         }
                     }
                 }
-                #pragma warning disable S2139 // False positive: We log with context then rethrow for global handler
+#pragma warning disable S2139 // False positive: We log with context then rethrow for global handler
                 catch (Exception ex)
-                #pragma warning restore S2139
+#pragma warning restore S2139
                 {
                     stopwatch.Stop();
                     var durationSeconds = stopwatch.Elapsed.TotalSeconds;
@@ -190,18 +194,6 @@ namespace TC.Agro.Identity.Service.Middleware
         {
             var roles = context.User?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
             return roles?.Count > 0 ? string.Join(",", roles) : "";
-        }
-
-        private static string ExtractCorrelationId(HttpContext context)
-        {
-            // Try to get from request header
-            if (context.Request.Headers.TryGetValue(TelemetryConstants.CorrelationIdHeader, out var headerValue))
-            {
-                return headerValue.ToString();
-            }
-
-            // Generate new one if not present
-            return Guid.NewGuid().ToString("N")[..8]; // Use first 8 chars of GUID
         }
 
         private void LogSuccessResponse(HttpContext context, string path, double durationSeconds, string userId, string correlationId)

@@ -174,9 +174,16 @@ namespace TC.Agro.Identity.Service.Extensions
             // Enables proxy headers (important for ACA)
             ////app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All });
 
+            // MIDDLEWARE EXECUTION ORDER (CRITICAL):
+            // 1. ExceptionHandler - Catches all exceptions
+            // 2. CorrelationMiddleware - Sets correlation ID (via ICorrelationIdGenerator)
+            // 3. TelemetryMiddleware - Uses correlation ID, creates root activity (registered in Program.cs BEFORE Authentication)
+            // 4. SerilogRequestLogging - Logs HTTP requests with correlation ID
+            // Note: TelemetryMiddleware is registered BEFORE Authentication in Program.cs
+            //       to capture all HTTP request context including correlation ID
+
             app.UseCustomExceptionHandler()
                 .UseCorrelationMiddleware()
-                .UseMiddleware<TelemetryMiddleware>() // Add telemetry middleware after correlation to capture correlation ID
                 .UseSerilogRequestLogging()
                 .UseHealthChecks("/health", new HealthCheckOptions
                 {

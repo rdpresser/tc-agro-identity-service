@@ -29,6 +29,9 @@ app.UseIngressPathBase(app.Configuration);
 // Cross-Origin Resource Sharing (CORS)
 app.UseCors("DefaultCorsPolicy");
 
+// CRITICAL: TelemetryMiddleware MUST come BEFORE Authentication to capture all HTTP activities
+app.UseMiddleware<TC.Agro.Identity.Service.Middleware.TelemetryMiddleware>();
+
 app.UseAuthentication()
   .UseAuthorization()
   .UseCustomFastEndpoints(app.Configuration)
