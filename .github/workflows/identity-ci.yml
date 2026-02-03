@@ -7,6 +7,13 @@ env:
   DOTNET_VERSION: '10.0.x'
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/identity-service/**'
+      - 'common/**'
+      - '.github/workflows/**'
+
   pull_request:
     branches: [main]
     paths:
