@@ -38,13 +38,16 @@ jobs:
       checks: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout identity-service
+        uses: actions/checkout@v4
+        with:
+          path: ../services/identity-service
 
       - name: 📥 Checkout common repository
         uses: actions/checkout@v4
         with:
           repository: rdpresser/tc-agro-common
-          path: common
+          path: ../common
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: ⚙️ Setup .NET
@@ -53,15 +56,15 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: 📦 Restore
-        working-directory: services/identity-service
+        working-directory: ../services/identity-service
         run: dotnet restore ${{ env.SOLUTION_FILE }}
 
       - name: 🏗️ Build
-        working-directory: services/identity-service
+        working-directory: ../services/identity-service
         run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release
 
       - name: 🧪 Test + Coverage
-        working-directory: services/identity-service
+        working-directory: ../services/identity-service
         run: |
           dotnet test ${{ env.SOLUTION_FILE }} \
             --no-build \
@@ -71,7 +74,7 @@ jobs:
             --results-directory test-results
 
       - name: 📊 Coverage Report
-        working-directory: services/identity-service
+        working-directory: ../services/identity-service
         run: |
           dotnet tool install -g dotnet-reportgenerator-globaltool
           reportgenerator \
@@ -84,8 +87,8 @@ jobs:
         with:
           name: tests-${{ github.sha }}
           path: |
-            services/identity-service/coverage/
-            services/identity-service/test-results/
+            ../services/identity-service/coverage/
+            ../services/identity-service/test-results/
           retention-days: 7
 
   # ─────────────────────────────────────────────
@@ -100,13 +103,16 @@ jobs:
       security-events: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout identity-service
+        uses: actions/checkout@v4
+        with:
+          path: ../services/identity-service
 
       - name: 📥 Checkout common repository
         uses: actions/checkout@v4
         with:
           repository: rdpresser/tc-agro-common
-          path: common
+          path: ../common
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🔖 Prepare tags
