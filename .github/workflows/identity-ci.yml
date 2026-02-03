@@ -69,26 +69,24 @@ jobs:
           dotnet test ${{ env.SOLUTION_FILE }} \
             --no-build \
             --configuration Release \
-            --collect:"XPlat Code Coverage" \
-            --logger "trx;LogFileName=tests.trx" \
-            --results-directory test-results
+            --results-directory test-results \
+            --logger "console;verbosity=detailed"
 
       - name: 📊 Coverage Report
-        working-directory: services/identity-service
-        run: |
-          dotnet tool install -g dotnet-reportgenerator-globaltool
-          reportgenerator \
-            "-reports:test-results/**/coverage.cobertura.xml" \
-            "-targetdir:coverage" \
-            "-reporttypes:Html;TextSummary"
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.cobertura.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          verbose: true
 
       - name: 📦 Upload Artifacts
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: tests-${{ github.sha }}
-          path: |
-            services/identity-service/coverage/
-            services/identity-service/test-results/
+          name: test-results-${{ github.sha }}
+          path: services/identity-service/test-results/
           retention-days: 7
 
   # ─────────────────────────────────────────────
