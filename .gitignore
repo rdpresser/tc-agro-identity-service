@@ -11,6 +11,9 @@
 .vs/
 .vscode/
 
+# GitHub
+.github/workflows_ref/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
