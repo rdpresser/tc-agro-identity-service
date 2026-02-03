@@ -66,11 +66,11 @@ jobs:
       - name: 🧪 Test + Coverage
         working-directory: services/identity-service
         run: |
-          dotnet test ${{ env.SOLUTION_FILE }} \
+          dotnet test --solution ${{ env.SOLUTION_FILE }} \
             --no-build \
             --configuration Release \
             --results-directory test-results \
-            --logger "console;verbosity=detailed"
+            --report-xunit-trx
 
       - name: 📊 Coverage Report
         uses: codecov/codecov-action@v3
