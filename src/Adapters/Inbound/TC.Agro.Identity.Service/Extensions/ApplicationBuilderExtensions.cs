@@ -168,19 +168,28 @@ namespace TC.Agro.Identity.Service.Extensions
             return app;
         }
 
-        // Configures custom middlewares including HTTPS redirection, exception handling, correlation, logging, and health checks
+        /// <summary>
+        /// Configures early-stage middlewares that must run BEFORE TelemetryMiddleware and Authentication.
+        /// This includes exception handling, correlation ID extraction, request logging, and health checks.
+        ///
+        /// MIDDLEWARE EXECUTION ORDER (CRITICAL):
+        /// 1. ExceptionHandler - Catches all exceptions and transforms to problem details
+        /// 2. CorrelationMiddleware - Extracts/generates correlation ID and sets ICorrelationIdGenerator
+        /// 3. SerilogRequestLogging - Logs HTTP requests with correlation ID in context
+        /// 4. HealthChecks - /health, /ready, /live, /metrics endpoints
+        ///
+        /// THEN (in Program.cs):
+        /// 5. TelemetryMiddleware - Uses correlation ID from ICorrelationIdGenerator, creates root Activity/span
+        /// 6. Authentication/Authorization - JWT validation
+        /// 7. FastEndpoints - Route handlers
+        ///
+        /// NOTE: This method is called in Program.cs BEFORE TelemetryMiddleware, but AFTER CORS and IngressPathBase.
+        /// TelemetryMiddleware is registered separately in Program.cs to maintain correct execution order.
+        /// </summary>
         public static IApplicationBuilder UseCustomMiddlewares(this IApplicationBuilder app)
         {
             // Enables proxy headers (important for ACA)
             ////app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All });
-
-            // MIDDLEWARE EXECUTION ORDER (CRITICAL):
-            // 1. ExceptionHandler - Catches all exceptions
-            // 2. CorrelationMiddleware - Sets correlation ID (via ICorrelationIdGenerator)
-            // 3. TelemetryMiddleware - Uses correlation ID, creates root activity (registered in Program.cs BEFORE Authentication)
-            // 4. SerilogRequestLogging - Logs HTTP requests with correlation ID
-            // Note: TelemetryMiddleware is registered BEFORE Authentication in Program.cs
-            //       to capture all HTTP request context including correlation ID
 
             app.UseCustomExceptionHandler()
                 .UseCorrelationMiddleware()
@@ -200,7 +209,7 @@ namespace TC.Agro.Identity.Service.Extensions
                     Predicate = check => check.Tags.Contains("live"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 })
-                // Add Prometheus metrics endpoint
+                // Prometheus metrics endpoint for OTEL Collector scraping
                 .UseOpenTelemetryPrometheusScrapingEndpoint("/metrics");
 
             return app;
