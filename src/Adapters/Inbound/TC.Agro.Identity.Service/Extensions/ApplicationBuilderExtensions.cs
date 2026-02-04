@@ -209,7 +209,24 @@ namespace TC.Agro.Identity.Service.Extensions
                     Predicate = check => check.Tags.Contains("live"),
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 })
-                // Prometheus metrics endpoint for OTEL Collector scraping
+                // ============================================================
+                // METRICS ENDPOINT STRATEGY
+                // ============================================================
+                // This endpoint exposes metrics in Prometheus format for scraping.
+                //
+                // DUAL APPROACH (Current):
+                // 1. OTLP Push: App sends metrics to OTEL Collector (AddOtlpExporter in ServiceCollectionExtensions)
+                //    → Centralized processing, label normalization, batching
+                // 2. Prometheus Scrape: This endpoint allows backup scraping if needed
+                //    → Direct access without OTEL Collector dependency
+                //
+                // WHEN TO USE EACH:
+                // - Use OTLP Push (primary): When you need OTEL Collector processing (label cleanup, aggregation)
+                // - Use Prometheus Scrape (backup): For direct Prometheus access, troubleshooting, or redundancy
+                //
+                // NO DUPLICATION: Prometheus scrapes from OTEL Collector:8889, not this endpoint
+                // This endpoint is here for flexibility and direct access if needed.
+                // ============================================================
                 .UseOpenTelemetryPrometheusScrapingEndpoint("/metrics");
 
             return app;

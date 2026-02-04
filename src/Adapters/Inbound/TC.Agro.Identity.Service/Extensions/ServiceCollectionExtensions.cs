@@ -444,8 +444,25 @@ namespace TC.Agro.Identity.Service.Extensions
                 });
 
                 // Configure OTLP for Metrics
-                // NOTE: Metrics are exposed via /metrics and scraped directly by Prometheus.
-                // OTLP metrics export is disabled to avoid duplicate label errors in Prometheus.
+                // NOTE: Send metrics to OTEL Collector for centralized processing
+                // OTEL Collector will strip problematic attributes before exposing to Prometheus
+                otelBuilder.WithMetrics(metricsBuilder =>
+                {
+                    metricsBuilder.AddOtlpExporter(otlp =>
+                    {
+                        otlp.Endpoint = new Uri(grafanaSettings.ResolveMetricsEndpoint());
+                        otlp.Protocol = grafanaSettings.Otlp.Protocol.ToLowerInvariant() == "grpc"
+                            ? OpenTelemetry.Exporter.OtlpExportProtocol.Grpc
+                            : OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
+
+                        if (!string.IsNullOrWhiteSpace(grafanaSettings.Otlp.Headers))
+                        {
+                            otlp.Headers = grafanaSettings.Otlp.Headers;
+                        }
+
+                        otlp.TimeoutMilliseconds = grafanaSettings.Otlp.TimeoutSeconds * 1000;
+                    });
+                });
 
                 // Configure OTLP for Logs
                 // NOTE: Logs use /v1/logs endpoint per OTLP specification
