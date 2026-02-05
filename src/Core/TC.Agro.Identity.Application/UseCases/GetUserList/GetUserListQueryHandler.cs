@@ -1,6 +1,6 @@
 namespace TC.Agro.Identity.Application.UseCases.GetUserList
 {
-    internal sealed class GetUserListQueryHandler : BaseQueryHandler<GetUserListQuery, IReadOnlyList<UserListResponse>>
+    internal sealed class GetUserListQueryHandler : BaseQueryHandler<GetUserListQuery, UserListResponse<UserResponse>>
     {
         private readonly IUserReadStore _userReadStore;
 
@@ -9,15 +9,23 @@ namespace TC.Agro.Identity.Application.UseCases.GetUserList
             _userReadStore = userReadStore ?? throw new ArgumentNullException(nameof(userReadStore));
         }
 
-        public override async Task<Result<IReadOnlyList<UserListResponse>>> ExecuteAsync(GetUserListQuery query,
+        public override async Task<Result<UserListResponse<UserResponse>>> ExecuteAsync(GetUserListQuery query,
             CancellationToken ct = default)
         {
-            var users = await _userReadStore.GetUserListAsync(query, ct).ConfigureAwait(false);
+            var (users, totalCount) = await _userReadStore.GetUserListAsync(query, ct).ConfigureAwait(false);
 
             if (users is null || !users.Any())
-                return Result<IReadOnlyList<UserListResponse>>.Success([]);
+                return Result<UserListResponse<UserResponse>>.Success(
+                    new UserListResponse<UserResponse>([], 0, query.PageNumber, query.PageSize));
 
-            return Result.Success<IReadOnlyList<UserListResponse>>([.. users]);
+            var response = new UserListResponse<UserResponse>(
+                data: [.. users],
+                totalCount: totalCount,
+                pageNumber: query.PageNumber,
+                pageSize: query.PageSize
+            );
+
+            return Result.Success(response);
         }
     }
 }

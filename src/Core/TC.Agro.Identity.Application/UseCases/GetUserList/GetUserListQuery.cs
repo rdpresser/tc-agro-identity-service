@@ -1,6 +1,6 @@
-﻿namespace TC.Agro.Identity.Application.UseCases.GetUserList
+namespace TC.Agro.Identity.Application.UseCases.GetUserList
 {
-    public sealed record GetUserListQuery : ICachedQuery<IReadOnlyList<UserListResponse>>
+    public sealed record GetUserListQuery : ICachedQuery<UserListResponse<UserResponse>>
     {
         public int PageNumber { get; init; } = 1;
         public int PageSize { get; init; } = 10;

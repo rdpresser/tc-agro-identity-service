@@ -1,6 +1,6 @@
-﻿namespace TC.Agro.Identity.Service.Endpoints.User
+namespace TC.Agro.Identity.Service.Endpoints.User
 {
-    public sealed class GetUserListEndpoint : BaseApiEndpoint<GetUserListQuery, IReadOnlyList<UserListResponse>>
+    public sealed class GetUserListEndpoint : BaseApiEndpoint<GetUserListQuery, UserListResponse<UserResponse>>
     {
         private static readonly string[] items = [AppConstants.AdminRole, AppConstants.UserRole];
 
@@ -12,20 +12,20 @@
             RequestBinder(new RequestBinder<GetUserListQuery>(BindingSource.QueryParams));
 
             Roles(AppConstants.AdminRole);
-            PreProcessor<QueryCachingPreProcessorBehavior<GetUserListQuery, IReadOnlyList<UserListResponse>>>();
-            PostProcessor<QueryCachingPostProcessorBehavior<GetUserListQuery, IReadOnlyList<UserListResponse>>>();
+            PreProcessor<QueryCachingPreProcessorBehavior<GetUserListQuery, UserListResponse<UserResponse>>>();
+            PostProcessor<QueryCachingPostProcessorBehavior<GetUserListQuery, UserListResponse<UserResponse>>>();
 
             Description(
-                x => x.Produces<UserListResponse>(200)
+                x => x.Produces<UserListResponse<UserResponse>>(200)
                       .ProducesProblemDetails()
                       .Produces((int)HttpStatusCode.Forbidden)
                       .Produces((int)HttpStatusCode.Unauthorized));
 
             var faker = new Faker();
-            List<UserListResponse> userList = [];
+            List<UserResponse> userList = [];
             for (int i = 0; i < 5; i++)
             {
-                userList.Add(new UserListResponse
+                userList.Add(new UserResponse
                 {
                     Id = Guid.NewGuid(),
                     Name = faker.Name.FullName(),
@@ -34,6 +34,13 @@
                     Role = faker.PickRandom(items)
                 });
             }
+
+            var exampleResponse = new UserListResponse<UserResponse>(
+                data: [.. userList],
+                totalCount: 42,
+                pageNumber: 1,
+                pageSize: 5
+            );
 
             Summary(s =>
             {
@@ -46,7 +53,7 @@
                     SortDirection = "asc",
                     Filter = "<any value/field>"
                 };
-                s.ResponseExamples[200] = userList;
+                s.ResponseExamples[200] = exampleResponse;
                 s.Responses[200] = "Returned when the user list is successfully retrieved using the specified filters.";
                 s.Responses[400] = "Returned when the request contains invalid parameters.";
                 s.Responses[403] = "Returned when the logged-in user lacks the required role to access this endpoint.";

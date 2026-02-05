@@ -63,11 +63,11 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 userAggregate.Role);
         }
 
-        public async Task<IReadOnlyList<UserListResponse>> GetUserListAsync(
+        public async Task<(IReadOnlyList<UserResponse> Users, int TotalCount)> GetUserListAsync(
             GetUserListQuery query,
             CancellationToken cancellationToken = default)
         {
-            var usersQuery = _dbContext.Set<UserAggregate>()
+            var baseQuery = _dbContext.Set<UserAggregate>()
                 .AsNoTracking()
                 .Where(u => u.IsActive);
 
@@ -75,7 +75,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
             {
                 var pattern = $"%{query.Filter}%";
 
-                usersQuery = usersQuery.Where(u =>
+                baseQuery = baseQuery.Where(u =>
                     EF.Functions.ILike(u.Name, pattern) ||
                     EF.Functions.ILike(u.Username, pattern) ||
                     EF.Functions.ILike(u.Email.Value, pattern) ||
@@ -83,40 +83,41 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 );
             }
 
+            // Get total count before pagination
+            var totalCount = await baseQuery.CountAsync(cancellationToken).ConfigureAwait(false);
+
             // sorting - IMPORTANT: Must have OrderBy before Skip/Take to avoid unpredictable results
             if (!string.IsNullOrWhiteSpace(query.SortBy))
             {
                 var isAscending = string.Equals(query.SortDirection, "asc", StringComparison.OrdinalIgnoreCase);
 
-                usersQuery = query.SortBy.ToLower() switch
+                baseQuery = query.SortBy.ToLower() switch
                 {
-                    "name" => isAscending ? usersQuery.OrderBy(u => u.Name) : usersQuery.OrderByDescending(u => u.Name),
-                    "username" => isAscending ? usersQuery.OrderBy(u => u.Username) : usersQuery.OrderByDescending(u => u.Username),
+                    "name" => isAscending ? baseQuery.OrderBy(u => u.Name) : baseQuery.OrderByDescending(u => u.Name),
+                    "username" => isAscending ? baseQuery.OrderBy(u => u.Username) : baseQuery.OrderByDescending(u => u.Username),
 
                     // IMPORTANT: use EF.Property for ValueObjects
                     "email" => isAscending
-                        ? usersQuery.OrderBy(u => u.Email.Value)
-                        : usersQuery.OrderByDescending(u => u.Email.Value),
+                        ? baseQuery.OrderBy(u => u.Email.Value)
+                        : baseQuery.OrderByDescending(u => u.Email.Value),
 
                     "role" => isAscending
-                        ? usersQuery.OrderBy(u => u.Role.Value)
-                        : usersQuery.OrderByDescending(u => u.Role.Value),
+                        ? baseQuery.OrderBy(u => u.Role.Value)
+                        : baseQuery.OrderByDescending(u => u.Role.Value),
 
-                    _ => usersQuery.OrderByDescending(u => u.Id)  // Default: order by ID descending
+                    _ => baseQuery.OrderByDescending(u => u.Id)  // Default: order by ID descending
                 };
             }
             else
             {
                 // Default ordering when no sort specified (required for predictable pagination)
-                usersQuery = usersQuery.OrderByDescending(u => u.Id);
+                baseQuery = baseQuery.OrderByDescending(u => u.Id);
             }
 
-            usersQuery = usersQuery
+            var users = await baseQuery
                 .Skip((query.PageNumber - 1) * query.PageSize)
-                .Take(query.PageSize);
-
-            return await usersQuery
-                .Select(u => new UserListResponse
+                .Take(query.PageSize)
+                .Select(u => new UserResponse
                 {
                     Id = u.Id,
                     Name = u.Name,
@@ -124,7 +125,10 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                     Email = u.Email.Value,
                     Role = u.Role.Value
                 })
-                .ToListAsync(cancellationToken);
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return ([.. users], totalCount);
         }
 
     }
