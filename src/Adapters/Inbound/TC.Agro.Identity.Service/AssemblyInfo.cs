@@ -25,6 +25,7 @@ global using TC.Agro.Contracts.Events.Identity;
 global using TC.Agro.Identity.Application;
 global using TC.Agro.Identity.Application.Abstractions;
 global using TC.Agro.Identity.Application.UseCases.CreateUser;
+global using TC.Agro.Identity.Application.UseCases.DeactivateUser;
 global using TC.Agro.Identity.Application.UseCases.GetUserList;
 global using TC.Agro.Identity.Application.UseCases.LoginUser;
 global using TC.Agro.Identity.Infrastructure;

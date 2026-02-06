@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Domain.Aggregates
+namespace TC.Agro.Identity.Domain.Aggregates
 {
     [ExcludeFromCodeCoverage]
     public static class UserDomainErrors
@@ -27,5 +27,15 @@
             "JWTSecretKey",
             "JWT secret key is not configured.",
             "JWT.SecretKeyNotConfigured");
+
+        public static readonly DomainError SelfDeactivation = new(
+            "User.SelfDeactivation",
+            "You cannot deactivate your own account. Please contact an administrator.",
+            "User.SelfDeactivation");
+
+        public static readonly DomainError AlreadyInactive = new(
+            "User.AlreadyInactive",
+            "User is already deactivated.",
+            "User.AlreadyInactive");
     }
 }

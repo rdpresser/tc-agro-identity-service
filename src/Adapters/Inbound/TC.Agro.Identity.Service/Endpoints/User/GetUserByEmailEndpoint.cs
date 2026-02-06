@@ -1,4 +1,3 @@
-﻿using TC.Agro.Identity.Application.Abstractions;
 using TC.Agro.Identity.Application.UseCases.GetUserByEmail;
 
 namespace TC.Agro.Identity.Service.Endpoints.User
@@ -38,7 +37,8 @@ namespace TC.Agro.Identity.Service.Endpoints.User
                     Name = "John Smith",
                     Username = "johnsmith",
                     Email = "John.smith@gmail.com",
-                    Role = "Admin"
+                    Role = "Admin",
+                    IsActive = true
                 };
                 s.Responses[200] = "Returned when user information is successfully retrieved.";
                 s.Responses[400] = "Returned when the request is invalid.";

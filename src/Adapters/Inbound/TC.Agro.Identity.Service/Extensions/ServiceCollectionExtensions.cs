@@ -111,9 +111,9 @@ namespace TC.Agro.Identity.Service.Extensions
         // Authentication and Authorization
         public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            var jwtSettings = configuration.GetSection("Auth:Jwt").Get<JwtOptions>();
+            var jwtSettings = JwtHelper.Build(configuration);
 
-            services.AddAuthenticationJwtBearer(s => s.SigningKey = jwtSettings!.SecretKey)
+            services.AddAuthenticationJwtBearer(s => s.SigningKey = jwtSettings.SecretKey)
                     .AddAuthorization()
                     .AddHttpContextAccessor();
 
@@ -256,6 +256,11 @@ namespace TC.Agro.Identity.Service.Extensions
                 // Publishing example
                 // -------------------------------
                 opts.PublishMessage<EventContext<UserCreatedIntegrationEvent>>()
+                    .ToRabbitExchange(exchangeName)
+                    .BufferedInMemory()
+                    .UseDurableOutbox();
+
+                opts.PublishMessage<EventContext<UserDeactivatedIntegrationEvent>>()
                     .ToRabbitExchange(exchangeName)
                     .BufferedInMemory()
                     .UseDurableOutbox();

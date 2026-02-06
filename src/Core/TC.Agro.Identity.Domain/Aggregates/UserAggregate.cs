@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Domain.Aggregates
+namespace TC.Agro.Identity.Domain.Aggregates
 {
     public sealed class UserAggregate : BaseAggregateRoot
     {
@@ -25,7 +25,8 @@
             errors.AddErrorsIfFailure(roleResult);
             errors.AddRange(ValidateNameAndUsername(name, username));
 
-            if (errors.Count > 0) return Result.Invalid(errors.ToArray());
+            if (errors.Count > 0)
+                return Result.Invalid(errors.ToArray());
 
             return CreateAggregate(name, emailResult.Value, username, passwordResult.Value, roleResult.Value);
         }
@@ -36,6 +37,23 @@
             var @event = new UserCreatedDomainEvent(aggregate.Id, name, email.Value, username, password.Hash, role.Value, DateTimeOffset.UtcNow);
             aggregate.ApplyEvent(@event);
             return Result.Success(aggregate);
+        }
+
+        #endregion
+
+        #region Update / Change Methods
+
+        public Result Deactivate()
+        {
+            if (!IsActive)
+            {
+                var error = UserDomainErrors.AlreadyInactive;
+                return Result.Invalid(new ValidationError(error.ErrorCode, error.ErrorMessage));
+            }
+
+            var @event = new UserDeactivatedDomainEvent(Id, DateTimeOffset.UtcNow);
+            ApplyEvent(@event);
+            return Result.Success();
         }
 
         #endregion
@@ -54,17 +72,27 @@
             SetActivate();
         }
 
+        public void Apply(UserDeactivatedDomainEvent @event)
+        {
+            SetDeactivate();
+            SetUpdatedAt(@event.OccurredOn);
+        }
+
         private void ApplyEvent(BaseDomainEvent @event)
         {
             AddNewEvent(@event);
             switch (@event)
             {
-                case UserCreatedDomainEvent createdEvent: Apply(createdEvent); break;
-                    ////case UserUpdatedDomainEvent updatedEvent: Apply(updatedEvent); break;
-                    ////case UserPasswordChangedDomainEvent passwordChangedEvent: Apply(passwordChangedEvent); break;
-                    ////case UserRoleChangedDomainEvent roleChangedEvent: Apply(roleChangedEvent); break;
-                    ////case UserActivatedDomainEvent activatedEvent: Apply(activatedEvent); break;
-                    ////case UserDeactivatedDomainEvent deactivatedEvent: Apply(deactivatedEvent); break;
+                case UserCreatedDomainEvent createdEvent:
+                    Apply(createdEvent);
+                    break;
+                ////case UserUpdatedDomainEvent updatedEvent: Apply(updatedEvent); break;
+                ////case UserPasswordChangedDomainEvent passwordChangedEvent: Apply(passwordChangedEvent); break;
+                ////case UserRoleChangedDomainEvent roleChangedEvent: Apply(roleChangedEvent); break;
+                ////case UserActivatedDomainEvent activatedEvent: Apply(activatedEvent); break;
+                case UserDeactivatedDomainEvent deactivatedEvent:
+                    Apply(deactivatedEvent);
+                    break;
             }
         }
 
@@ -99,8 +127,10 @@
 
         private static IEnumerable<ValidationError> ValidateNameAndUsername(string name, string username)
         {
-            foreach (var error in ValidateName(name)) yield return error;
-            foreach (var error in ValidateUsername(username)) yield return error;
+            foreach (var error in ValidateName(name))
+                yield return error;
+            foreach (var error in ValidateUsername(username))
+                yield return error;
         }
 
         #endregion

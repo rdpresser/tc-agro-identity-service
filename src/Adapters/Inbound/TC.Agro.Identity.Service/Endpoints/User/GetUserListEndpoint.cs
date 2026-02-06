@@ -31,7 +31,8 @@ namespace TC.Agro.Identity.Service.Endpoints.User
                     Name = faker.Name.FullName(),
                     Username = faker.Person.UserName,
                     Email = faker.Internet.Email(),
-                    Role = faker.PickRandom(items)
+                    Role = faker.PickRandom(items),
+                    IsActive = faker.Random.Bool()
                 });
             }
 

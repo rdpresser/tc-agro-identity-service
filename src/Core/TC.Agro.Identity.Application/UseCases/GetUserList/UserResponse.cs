@@ -7,5 +7,6 @@ namespace TC.Agro.Identity.Application.UseCases.GetUserList
         public required string Username { get; init; }
         public required string Email { get; init; }
         public required string Role { get; init; }
+        public required bool IsActive { get; init; }
     }
 }

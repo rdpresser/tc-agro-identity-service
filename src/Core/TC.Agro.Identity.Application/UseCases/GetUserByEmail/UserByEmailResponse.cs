@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
+namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
 {
     public class UserByEmailResponse
     {
@@ -7,5 +7,6 @@
         public required string Username { get; init; }
         public required string Email { get; init; }
         public required string Role { get; init; }
+        public required bool IsActive { get; init; }
     }
 }

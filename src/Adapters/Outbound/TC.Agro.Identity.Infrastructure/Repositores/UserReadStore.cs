@@ -38,7 +38,8 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 Name = projection.Name,
                 Username = projection.Username,
                 Email = projection.Email,
-                Role = projection.Role
+                Role = projection.Role,
+                IsActive = projection.IsActive
             };
         }
 
@@ -46,7 +47,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
         {
             var userAggregate = await _dbContext.Set<UserAggregate>()
                 .AsNoTracking()
-                .SingleOrDefaultAsync(entity => EF.Functions.ILike(entity.Email.Value, email), cancellationToken)
+                .SingleOrDefaultAsync(entity => EF.Functions.ILike(entity.Email.Value, email) && entity.IsActive, cancellationToken)
                 .ConfigureAwait(false);
 
             if (userAggregate is null)
@@ -123,7 +124,8 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                     Name = u.Name,
                     Username = u.Username,
                     Email = u.Email.Value,
-                    Role = u.Role.Value
+                    Role = u.Role.Value,
+                    IsActive = u.IsActive
                 })
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
