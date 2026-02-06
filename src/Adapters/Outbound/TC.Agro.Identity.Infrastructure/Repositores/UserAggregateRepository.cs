@@ -15,7 +15,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
         public override async Task<UserAggregate?> GetByIdAsync(Guid aggregateId, CancellationToken cancellationToken = default)
         {
             return await DbSet
-                .FirstOrDefaultAsync(u => u.Id == aggregateId && u.IsActive, cancellationToken)
+                .FirstOrDefaultAsync(u => u.Id == aggregateId, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -23,7 +23,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
         {
             return await DbSet
                 .AsNoTracking()
-                .AnyAsync(userAggregate => EF.Functions.ILike(userAggregate.Email.Value, email) && userAggregate.IsActive, cancellationToken)
+                .AnyAsync(userAggregate => EF.Functions.ILike(userAggregate.Email.Value, email), cancellationToken)
                 .ConfigureAwait(false);
         }
     }

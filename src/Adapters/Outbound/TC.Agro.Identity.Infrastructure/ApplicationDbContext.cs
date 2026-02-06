@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Infrastructure
+namespace TC.Agro.Identity.Infrastructure
 {
     [ExcludeFromCodeCoverage]
     public sealed class ApplicationDbContext : DbContext, IApplicationDbContext
@@ -20,6 +20,9 @@
             modelBuilder.Ignore<BaseDomainEvent>();
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+            // Global query filter for soft delete - only return active users
+            modelBuilder.Entity<UserAggregate>().HasQueryFilter(u => u.IsActive);
         }
 
         /// <inheritdoc />
