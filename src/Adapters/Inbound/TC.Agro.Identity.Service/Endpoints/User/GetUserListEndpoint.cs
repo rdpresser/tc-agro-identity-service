@@ -1,6 +1,8 @@
+using TC.Agro.SharedKernel.Infrastructure.Pagination;
+
 namespace TC.Agro.Identity.Service.Endpoints.User
 {
-    public sealed class GetUserListEndpoint : BaseApiEndpoint<GetUserListQuery, UserListResponse<UserResponse>>
+    public sealed class GetUserListEndpoint : BaseApiEndpoint<GetUserListQuery, PaginatedResponse<UserResponse>>
     {
         private static readonly string[] items = [AppConstants.AdminRole, AppConstants.UserRole];
 
@@ -12,11 +14,11 @@ namespace TC.Agro.Identity.Service.Endpoints.User
             RequestBinder(new RequestBinder<GetUserListQuery>(BindingSource.QueryParams));
 
             Roles(AppConstants.AdminRole);
-            PreProcessor<QueryCachingPreProcessorBehavior<GetUserListQuery, UserListResponse<UserResponse>>>();
-            PostProcessor<QueryCachingPostProcessorBehavior<GetUserListQuery, UserListResponse<UserResponse>>>();
+            PreProcessor<QueryCachingPreProcessorBehavior<GetUserListQuery, PaginatedResponse<UserResponse>>>();
+            PostProcessor<QueryCachingPostProcessorBehavior<GetUserListQuery, PaginatedResponse<UserResponse>>>();
 
             Description(
-                x => x.Produces<UserListResponse<UserResponse>>(200)
+                x => x.Produces<PaginatedResponse<UserResponse>>(200)
                       .ProducesProblemDetails()
                       .Produces((int)HttpStatusCode.Forbidden)
                       .Produces((int)HttpStatusCode.Unauthorized));
@@ -36,7 +38,7 @@ namespace TC.Agro.Identity.Service.Endpoints.User
                 });
             }
 
-            var exampleResponse = new UserListResponse<UserResponse>(
+            var exampleResponse = new PaginatedResponse<UserResponse>(
                 data: [.. userList],
                 totalCount: 42,
                 pageNumber: 1,
