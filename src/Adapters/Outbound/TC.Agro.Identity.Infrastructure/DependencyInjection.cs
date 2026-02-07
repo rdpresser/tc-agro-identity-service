@@ -39,6 +39,9 @@ namespace TC.Agro.Identity.Infrastructure
 
             });
 
+            // IApplicationDbContext (for ApplyMigrations and generic database access)
+            services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+
             // Unit of Work (for simple handlers that don't need outbox)
             services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
 

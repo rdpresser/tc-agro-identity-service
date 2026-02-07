@@ -23,6 +23,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
         {
             return await DbSet
                 .AsNoTracking()
+                .IgnoreQueryFilters() // Ensure we check all users, including soft-deleted ones
                 .AnyAsync(userAggregate => EF.Functions.ILike(userAggregate.Email.Value, email), cancellationToken)
                 .ConfigureAwait(false);
         }
