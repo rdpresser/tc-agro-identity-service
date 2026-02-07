@@ -1,4 +1,5 @@
-﻿global using Microsoft.AspNetCore.Identity;
+global using System.Diagnostics.CodeAnalysis;
+global using Microsoft.AspNetCore.Identity;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.EntityFrameworkCore.Migrations;
@@ -6,7 +7,6 @@ global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using Serilog;
-global using System.Diagnostics.CodeAnalysis;
 global using TC.Agro.Identity.Application.Abstractions.Ports;
 global using TC.Agro.Identity.Application.UseCases.GetUserByEmail;
 global using TC.Agro.Identity.Application.UseCases.GetUserList;
@@ -20,6 +20,7 @@ global using TC.Agro.SharedKernel.Domain.Events;
 global using TC.Agro.SharedKernel.Infrastructure.Authentication;
 global using TC.Agro.SharedKernel.Infrastructure.Database;
 global using TC.Agro.SharedKernel.Infrastructure.Database.EfCore;
+global using TC.Agro.SharedKernel.Infrastructure.Messaging.Outbox;
 global using Wolverine.EntityFrameworkCore;
 //**//
 using System.Runtime.CompilerServices;

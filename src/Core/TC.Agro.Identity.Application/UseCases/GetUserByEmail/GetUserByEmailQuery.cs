@@ -1,4 +1,4 @@
-﻿using CacheTagCatalog = TC.Agro.Identity.Application.Abstractions.CacheTags;
+using CacheTagCatalog = TC.Agro.Identity.Application.Abstractions.CacheTags;
 
 namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
 {
@@ -10,6 +10,7 @@ namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
         public string GetCacheKey => _cacheKey ?? $"GetUserByEmailQuery-{Email}";
         public TimeSpan? Duration => null;
         public TimeSpan? DistributedCacheDuration => null;
+
         public IReadOnlyCollection<string> CacheTags =>
         [
             CacheTagCatalog.Users,
