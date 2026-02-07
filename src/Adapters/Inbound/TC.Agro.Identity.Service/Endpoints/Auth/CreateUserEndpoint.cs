@@ -7,6 +7,7 @@
             Post("register");
             RoutePrefixOverride("auth");
             PostProcessor<LoggingCommandPostProcessorBehavior<CreateUserCommand, CreateUserResponse>>();
+            PostProcessor<CacheInvalidationPostProcessorBehavior<CreateUserCommand, CreateUserResponse>>();
 
             AllowAnonymous();
             Description(

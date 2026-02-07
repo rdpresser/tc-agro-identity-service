@@ -10,7 +10,6 @@
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="FastEndpoints.Swagger" />
     <PackageReference Include="Ardalis.Result.AspNetCore" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
 
     <!-- Health Check -->
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />

@@ -1,3 +1,5 @@
+using TC.Agro.SharedKernel.Infrastructure.Database.EfCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddIdentityServices(builder);

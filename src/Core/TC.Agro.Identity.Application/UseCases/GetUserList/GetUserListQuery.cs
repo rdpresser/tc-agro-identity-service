@@ -1,3 +1,5 @@
+using CacheTagCatalog = TC.Agro.Identity.Application.Abstractions.CacheTags;
+
 namespace TC.Agro.Identity.Application.UseCases.GetUserList
 {
     public sealed record GetUserListQuery : ICachedQuery<UserListResponse<UserResponse>>
@@ -16,6 +18,11 @@ namespace TC.Agro.Identity.Application.UseCases.GetUserList
 
         public TimeSpan? Duration => null;
         public TimeSpan? DistributedCacheDuration => null;
+        public IReadOnlyCollection<string> CacheTags =>
+        [
+            CacheTagCatalog.Users,
+            CacheTagCatalog.UserList
+        ];
 
         public void SetCacheKey(string cacheKey)
         {

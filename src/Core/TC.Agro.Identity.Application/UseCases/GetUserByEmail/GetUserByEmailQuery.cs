@@ -1,4 +1,6 @@
-﻿namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
+﻿using CacheTagCatalog = TC.Agro.Identity.Application.Abstractions.CacheTags;
+
+namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
 {
     public sealed record GetUserByEmailQuery : ICachedQuery<UserByEmailResponse>
     {
@@ -8,6 +10,11 @@
         public string GetCacheKey => _cacheKey ?? $"GetUserByEmailQuery-{Email}";
         public TimeSpan? Duration => null;
         public TimeSpan? DistributedCacheDuration => null;
+        public IReadOnlyCollection<string> CacheTags =>
+        [
+            CacheTagCatalog.Users,
+            CacheTagCatalog.UserByEmail
+        ];
 
         public void SetCacheKey(string cacheKey)
             => _cacheKey = $"GetUserByEmailQuery-{Email}-{cacheKey}";
