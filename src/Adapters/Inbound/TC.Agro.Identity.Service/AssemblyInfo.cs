@@ -42,6 +42,7 @@ global using TC.Agro.SharedKernel.Infrastructure.Authentication;
 global using TC.Agro.SharedKernel.Infrastructure.Caching.HealthCheck;
 global using TC.Agro.SharedKernel.Infrastructure.Caching.Provider;
 global using TC.Agro.SharedKernel.Infrastructure.Database;
+global using TC.Agro.SharedKernel.Infrastructure.Database.EfCore;
 global using TC.Agro.SharedKernel.Infrastructure.MessageBroker;
 global using TC.Agro.SharedKernel.Infrastructure.Messaging;
 global using TC.Agro.SharedKernel.Infrastructure.Middleware;
