@@ -14,7 +14,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
             if (string.IsNullOrWhiteSpace(email))
                 return null;
 
-            var projection = await _dbContext.Set<UserAggregate>()
+            var projection = await _dbContext.Users
                 .AsNoTracking()
                 .Where(u => EF.Functions.ILike(u.Email.Value, email))
                 .Select(x => new
@@ -45,7 +45,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
 
         public async Task<UserTokenProvider?> GetUserTokenInfoAsync(string email, string password, CancellationToken cancellationToken = default)
         {
-            var userAggregate = await _dbContext.Set<UserAggregate>()
+            var userAggregate = await _dbContext.Users
                 .AsNoTracking()
                 .SingleOrDefaultAsync(entity => EF.Functions.ILike(entity.Email.Value, email), cancellationToken)
                 .ConfigureAwait(false);
@@ -68,7 +68,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
             GetUserListQuery query,
             CancellationToken cancellationToken = default)
         {
-            var baseQuery = _dbContext.Set<UserAggregate>()
+            var baseQuery = _dbContext.Users
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(query.Filter))
@@ -131,6 +131,5 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
 
             return ([.. users], totalCount);
         }
-
     }
 }
