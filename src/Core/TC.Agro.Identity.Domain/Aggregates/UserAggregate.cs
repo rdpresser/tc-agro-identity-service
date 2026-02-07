@@ -43,6 +43,24 @@ namespace TC.Agro.Identity.Domain.Aggregates
 
         #region Update / Change Methods
 
+        public Result UpdateInfo(string name, Email email, string username)
+        {
+            if (email == null)
+            {
+                return Result.Invalid(new ValidationError("Email.Required", "Email is required."));
+            }
+
+            var errors = ValidateNameAndUsername(name, username).ToArray();
+            if (errors.Length > 0)
+            {
+                return Result.Invalid(errors);
+            }
+
+            var @event = new UserUpdatedDomainEvent(Id, name, email.Value, username, DateTimeOffset.UtcNow);
+            ApplyEvent(@event);
+            return Result.Success();
+        }
+
         public Result Deactivate()
         {
             if (!IsActive)
@@ -78,6 +96,14 @@ namespace TC.Agro.Identity.Domain.Aggregates
             SetUpdatedAt(@event.OccurredOn);
         }
 
+        public void Apply(UserUpdatedDomainEvent @event)
+        {
+            Name = @event.Name;
+            Email = ValueObjects.Email.FromDb(@event.Email).Value;
+            Username = @event.Username;
+            SetUpdatedAt(@event.OccurredOn);
+        }
+
         private void ApplyEvent(BaseDomainEvent @event)
         {
             AddNewEvent(@event);
@@ -86,7 +112,9 @@ namespace TC.Agro.Identity.Domain.Aggregates
                 case UserCreatedDomainEvent createdEvent:
                     Apply(createdEvent);
                     break;
-                ////case UserUpdatedDomainEvent updatedEvent: Apply(updatedEvent); break;
+                case UserUpdatedDomainEvent updatedEvent:
+                    Apply(updatedEvent);
+                    break;
                 ////case UserPasswordChangedDomainEvent passwordChangedEvent: Apply(passwordChangedEvent); break;
                 ////case UserRoleChangedDomainEvent roleChangedEvent: Apply(roleChangedEvent); break;
                 ////case UserActivatedDomainEvent activatedEvent: Apply(activatedEvent); break;
