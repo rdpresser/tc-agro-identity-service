@@ -1,7 +1,7 @@
+using TC.Agro.Messaging.Extensions;
+
 namespace TC.Agro.Identity.Service.Extensions
 {
-    using TC.Agro.Messaging.Extensions;
-    
     internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, WebApplicationBuilder builder)
