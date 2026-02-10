@@ -14,33 +14,20 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
             if (string.IsNullOrWhiteSpace(email))
                 return null;
 
-            var projection = await _dbContext.Users
+            return await _dbContext.Users
                 .AsNoTracking()
                 .Where(u => EF.Functions.ILike(u.Email.Value, email))
-                .Select(x => new
+                .Select(u => new UserByEmailResponse
                 {
-                    x.Id,
-                    x.Name,
-                    x.Username,
-                    x.Email,
-                    x.Role,
-                    x.IsActive
+                    Id = u.Id,
+                    Name = u.Name,
+                    Username = u.Username,
+                    Email = u.Email.Value,
+                    Role = u.Role.Value,
+                    IsActive = u.IsActive
                 })
                 .FirstOrDefaultAsync(cancellationToken)
                 .ConfigureAwait(false);
-
-            if (projection is null)
-                return null;
-
-            return new UserByEmailResponse
-            {
-                Id = projection.Id,
-                Name = projection.Name,
-                Username = projection.Username,
-                Email = projection.Email,
-                Role = projection.Role,
-                IsActive = projection.IsActive
-            };
         }
 
         public async Task<UserTokenProvider?> GetUserTokenInfoAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -91,27 +78,32 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
             {
                 var isAscending = string.Equals(query.SortDirection, "asc", StringComparison.OrdinalIgnoreCase);
 
-                baseQuery = query.SortBy.ToLower() switch
+                baseQuery = query.SortBy.ToLowerInvariant() switch
                 {
-                    "name" => isAscending ? baseQuery.OrderBy(u => u.Name) : baseQuery.OrderByDescending(u => u.Name),
-                    "username" => isAscending ? baseQuery.OrderBy(u => u.Username) : baseQuery.OrderByDescending(u => u.Username),
-
-                    // IMPORTANT: use EF.Property for ValueObjects
+                    "id" => isAscending
+                        ? baseQuery.OrderBy(u => u.Id)
+                        : baseQuery.OrderByDescending(u => u.Id),
+                    "name" => isAscending
+                        ? baseQuery.OrderBy(u => u.Name)
+                        : baseQuery.OrderByDescending(u => u.Name),
+                    "username" => isAscending
+                        ? baseQuery.OrderBy(u => u.Username)
+                        : baseQuery.OrderByDescending(u => u.Username),
                     "email" => isAscending
                         ? baseQuery.OrderBy(u => u.Email.Value)
                         : baseQuery.OrderByDescending(u => u.Email.Value),
-
                     "role" => isAscending
                         ? baseQuery.OrderBy(u => u.Role.Value)
                         : baseQuery.OrderByDescending(u => u.Role.Value),
-
-                    _ => baseQuery.OrderByDescending(u => u.Id)  // Default: order by ID descending
+                    "createdat" => isAscending
+                        ? baseQuery.OrderBy(u => u.CreatedAt)
+                        : baseQuery.OrderByDescending(u => u.CreatedAt),
+                    _ => baseQuery.OrderByDescending(u => u.CreatedAt)
                 };
             }
             else
             {
-                // Default ordering when no sort specified (required for predictable pagination)
-                baseQuery = baseQuery.OrderByDescending(u => u.Id);
+                baseQuery = baseQuery.OrderByDescending(u => u.CreatedAt);
             }
 
             var users = await baseQuery
