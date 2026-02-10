@@ -83,23 +83,32 @@ jobs:
             --no-build \
             --configuration Release \
             --results-directory test-results \
-            --report-xunit-trx
+            --collect "XPlat Code Coverage" \
+            -p:TestingPlatformDotnetTestSupport=true
 
       - name: 📊 Coverage Report
         uses: codecov/codecov-action@v3
         with:
-          files: ./coverage.cobertura.xml
+          files: services/identity-service/test-results/**/coverage.cobertura.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
           verbose: true
 
-      - name: 📦 Upload Artifacts
+      - name: 📄 Upload TRX Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-${{ github.sha }}
-          path: services/identity-service/test-results/
+          name: identity-service-trx-${{ github.sha }}
+          path: services/identity-service/test-results/**/*.trx
+          retention-days: 7
+
+      - name: 📈 Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: identity-service-coverage-${{ github.sha }}
+          path: services/identity-service/test-results/**/coverage.cobertura.xml
           retention-days: 7
 
   # ─────────────────────────────────────────────
