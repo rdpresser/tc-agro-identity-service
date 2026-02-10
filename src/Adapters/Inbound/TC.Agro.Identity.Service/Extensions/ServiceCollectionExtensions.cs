@@ -260,6 +260,11 @@ namespace TC.Agro.Identity.Service.Extensions
                     .BufferedInMemory()
                     .UseDurableOutbox();
 
+                opts.PublishMessage<EventContext<UserUpdatedIntegrationEvent>>()
+                    .ToRabbitExchange(exchangeName)
+                    .BufferedInMemory()
+                    .UseDurableOutbox();
+
                 opts.PublishMessage<EventContext<UserDeactivatedIntegrationEvent>>()
                     .ToRabbitExchange(exchangeName)
                     .BufferedInMemory()
