@@ -59,10 +59,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\common\src\TC.Agro.Messaging\TC.Agro.Messaging.csproj" />
     <ProjectReference Include="..\..\..\Core\TC.Agro.Identity.Application\TC.Agro.Identity.Application.csproj" />
     <ProjectReference Include="..\..\Outbound\TC.Agro.Identity.Infrastructure\TC.Agro.Identity.Infrastructure.csproj" />
     <!-- ✅ NEW: Shared messaging configuration for Wolverine event routing -->
-    <ProjectReference Include="..\..\..\..\..\common\src\TC.Agro.Messaging\TC.Agro.Messaging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
