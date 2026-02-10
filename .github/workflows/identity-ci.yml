@@ -29,14 +29,6 @@ on:
         type: choice
         options:
           - dev-rodrigo
-      skip-tests:
-        description: 'Skip unit tests (emergency only)'
-        type: boolean
-        default: false
-      skip-security-scan:
-        description: 'Skip Trivy scan (emergency only)'
-        type: boolean
-        default: false
 
 jobs:
 
@@ -45,7 +37,6 @@ jobs:
   # ─────────────────────────────────────────────
   test:
     runs-on: ubuntu-latest
-    if: github.event.inputs.skip-tests != 'true'
     permissions:
       contents: read
       checks: write
@@ -79,18 +70,23 @@ jobs:
       - name: 🧪 Test + Coverage
         working-directory: services/identity-service
         run: |
-          dotnet test --solution ${{ env.SOLUTION_FILE }} \
+          dotnet test ${{ env.SOLUTION_FILE }} \
             --no-build \
             --configuration Release \
             --results-directory test-results \
-            -p:CollectCoverage=true \
-            -p:CoverletOutputFormat=cobertura \
-            -p:CoverletOutput=./test-results/
+            --logger "trx;LogFileName=test-results.trx" \
+            --collect "XPlat Code Coverage"
+
+      - name: 🧾 List test-results
+        if: always()
+        working-directory: services/identity-service
+        run: ls -laR test-results
 
       - name: 📊 Coverage Report
         uses: codecov/codecov-action@v3
+        if: hashFiles('services/identity-service/**/test-results/**/coverage.cobertura.xml') != ''
         with:
-          files: services/identity-service/**/test-results/coverage.cobertura.xml
+          files: services/identity-service/**/test-results/**/coverage.cobertura.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
@@ -98,18 +94,18 @@ jobs:
 
       - name: 📄 Upload TRX Results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && hashFiles('services/identity-service/**/test-results/**/*.trx') != ''
         with:
           name: identity-service-trx-${{ github.sha }}
-          path: services/identity-service/test-results/**/*.trx
+          path: services/identity-service/**/test-results/**/*.trx
           retention-days: 7
 
       - name: 📈 Upload Coverage Report
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && hashFiles('services/identity-service/**/test-results/**/coverage.cobertura.xml') != ''
         with:
           name: identity-service-coverage-${{ github.sha }}
-          path: services/identity-service/**/test-results/coverage.cobertura.xml
+          path: services/identity-service/**/test-results/**/coverage.cobertura.xml
           retention-days: 7
 
   # ─────────────────────────────────────────────
@@ -119,7 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     if: always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
-    environment: ${{ github.event.inputs.environment || 'dev-rodrigo' }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'dev-rodrigo' }}
     permissions:
       contents: read
       security-events: write
@@ -180,21 +176,20 @@ jobs:
           load: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged != true }}
 
       - name: 🔒 Trivy Scan
-        if: github.event.inputs.skip-security-scan != 'true'
         continue-on-error: true  # Don't fail CI on vulnerabilities (dev/hackathon mode)
         uses: aquasecurity/trivy-action@0.24.0
         with:
           image-ref: ${{ steps.vars.outputs.image }}:${{ steps.vars.outputs.tag }}
           format: sarif
-          output: trivy.sarif
+          output: ${{ github.workspace }}/services/identity-service/trivy.sarif
           severity: HIGH,CRITICAL
           exit-code: 1
 
       - name: 📤 Upload SARIF
-        if: always() && github.event.inputs.skip-security-scan != 'true'
+        if: always() && hashFiles('services/identity-service/trivy.sarif') != ''
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: trivy.sarif
+          sarif_file: ${{ github.workspace }}/services/identity-service/trivy.sarif
 
       - name: ✅ Verify Push
         if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
@@ -227,8 +222,8 @@ jobs:
   update-gitops:
     runs-on: ubuntu-latest
     needs: [build]
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
-    environment: ${{ github.event.inputs.environment || 'dev-rodrigo' }}
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'dev-rodrigo' }}
     permissions:
       contents: write
 
