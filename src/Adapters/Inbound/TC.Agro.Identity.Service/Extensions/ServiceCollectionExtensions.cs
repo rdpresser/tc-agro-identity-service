@@ -252,9 +252,19 @@ namespace TC.Agro.Identity.Service.Extensions
 
                 var exchangeName = $"{mqConnectionFactory.Exchange}-exchange";
 
-                // -------------------------------
-                // Publishing example
-                // -------------------------------
+                // ============================================================
+                // PUBLISHING - Identity Service (Outbound)
+                // Padrão de comunicação inter-serviço:
+                // Exchange: identity.events-exchange (será vinculado a rabbitmq com tipo TOPIC)
+                // Routing Keys: identity.user.{action}
+                //   - identity.user.created
+                //   - identity.user.updated
+                //   - identity.user.deactivated
+                //
+                // Consumidores esperados:
+                // - Farm Service se vincula com binding key "identity.user.*"
+                //   para receber todos os user events
+                // ============================================================
                 opts.PublishMessage<EventContext<UserCreatedIntegrationEvent>>()
                     .ToRabbitExchange(exchangeName)
                     .BufferedInMemory()
@@ -270,16 +280,13 @@ namespace TC.Agro.Identity.Service.Extensions
                     .BufferedInMemory()
                     .UseDurableOutbox();
 
-                // -------------------------------
-                // Receiving (Inbox) - FUTURE USE (commented for now)
-                // -------------------------------
-                // When you want to consume events from other services:
-                //
-                // opts.ListenToRabbitQueue("tc-agro.identity.queue")
-                //     .UseDurableInbox(); // ensures deduplication on receive
-                //
-                // Then create a handler class:
-                // public static Task Handle(FarmCreatedIntegrationEvent evt) { ... }
+                // ============================================================
+                // Note on Routing Keys:
+                // Wolverine infers routing keys from event type name by default.
+                // For explicit control over routing keys like "identity.user.created",
+                // implement a custom IMessageRoutingConvention if default behavior doesn't match
+                // the "identity.user.*" pattern expected by Farm Service consumers.
+                // ============================================================
             });
 
             // -------------------------------
