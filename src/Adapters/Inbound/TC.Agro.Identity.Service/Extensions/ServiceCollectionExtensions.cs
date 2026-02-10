@@ -1,5 +1,7 @@
 namespace TC.Agro.Identity.Service.Extensions
 {
+    using TC.Agro.Messaging.Extensions;
+    
     internal static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, WebApplicationBuilder builder)
@@ -253,18 +255,12 @@ namespace TC.Agro.Identity.Service.Extensions
                 var exchangeName = $"{mqConnectionFactory.Exchange}-exchange";
 
                 // ============================================================
-                // PUBLISHING - Identity Service (Outbound)
-                // Padrão de comunicação inter-serviço:
-                // Exchange: identity.events-exchange (será vinculado a rabbitmq com tipo TOPIC)
-                // Routing Keys: identity.user.{action}
-                //   - identity.user.created
-                //   - identity.user.updated
-                //   - identity.user.deactivated
-                //
-                // Consumidores esperados:
-                // - Farm Service se vincula com binding key "identity.user.*"
-                //   para receber todos os user events
+                // PUBLISHING - Identity Service User Events (TOPIC Exchange)
+                // Uses TC.Agro.Messaging extension to register explicit routing keys
+                // Routing Keys: identity.user.created, identity.user.updated, identity.user.deactivated
                 // ============================================================
+                opts.ConfigureIdentityEventPublishing();
+
                 opts.PublishMessage<EventContext<UserCreatedIntegrationEvent>>()
                     .ToRabbitExchange(exchangeName)
                     .BufferedInMemory()
