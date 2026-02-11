@@ -2,6 +2,7 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
+
   <ItemGroup>
     <!-- ========================= -->
     <!-- Code Quality / Analyzers -->
@@ -11,18 +12,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </GlobalPackageReference>
   </ItemGroup>
+
   <ItemGroup>
     <!-- ========================= -->
     <!-- API / Swagger -->
     <!-- ========================= -->
-    <PackageVersion Include="FastEndpoints" Version="7.2.0" />
     <PackageVersion Include="FastEndpoints.Swagger" Version="7.2.0" />
-    <PackageVersion Include="FastEndpoints.Testing" Version="7.2.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.6" />
-    <!-- ========================= -->
-    <!-- Resilience -->
-    <!-- ========================= -->
-    <PackageVersion Include="Polly" Version="8.6.5" />
     <!-- ========================= -->
     <!-- Logging -->
     <!-- ========================= -->
@@ -34,10 +29,8 @@
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="Serilog.Sinks.Grafana.Loki" Version="8.3.2" />
     <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
-    <!-- ========================= -->
     <!-- Misc -->
     <!-- ========================= -->
-    <PackageVersion Include="DotNetEnv" Version="3.1.1" />
     <PackageVersion Include="Bogus" Version="35.6.5" />
     <!-- ========================= -->
     <!-- Health Checks -->
@@ -47,16 +40,13 @@
     <!-- ========================= -->
     <!-- Wolverine -->
     <!-- ========================= -->
-    <PackageVersion Include="Weasel.Core" Version="8.5.0" />
-    <PackageVersion Include="WolverineFx" Version="5.12.1" />
     <PackageVersion Include="WolverineFx.Postgresql" Version="5.12.1" />
-    <PackageVersion Include="WolverineFx.RabbitMQ" Version="5.12.1" />
-    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.12.1" />
     <!-- ========================= -->
     <!-- OpenTelemetry -->
     <!-- ========================= -->
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.14.0-beta.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.0" />
@@ -67,34 +57,20 @@
     <!-- ========================= -->
     <!-- Caching (FusionCache) -->
     <!-- ========================= -->
-    <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.5.0" />
     <PackageVersion Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.5.0" />
     <PackageVersion Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="2.5.0" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
     <!-- ========================= -->
     <!-- EF Core / DB -->
     <!-- ========================= -->
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
+    <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
-    <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-    <PackageVersion Include="Npgsql" Version="10.0.1" />
-    <PackageVersion Include="Z.EntityFramework.Plus.EFCore" Version="10.105.2.1" />
     <!-- ========================= -->
     <!-- Domain / Application -->
     <!-- ========================= -->
-    <PackageVersion Include="Ardalis.Result" Version="10.1.0" />
-    <PackageVersion Include="Ardalis.Result.AspNetCore" Version="10.1.0" />
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <!-- ========================= -->
-    <!-- Visual Studio / Containers -->
-    <!-- ========================= -->
-    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     <!-- ========================= -->
     <!-- Testing -->
     <!-- ========================= -->

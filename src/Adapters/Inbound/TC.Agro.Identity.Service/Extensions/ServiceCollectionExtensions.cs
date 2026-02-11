@@ -1,4 +1,6 @@
 using TC.Agro.Messaging.Extensions;
+using Wolverine.Postgresql;
+using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 
 namespace TC.Agro.Identity.Service.Extensions
 {
