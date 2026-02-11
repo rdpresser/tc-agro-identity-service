@@ -9,7 +9,7 @@ namespace TC.Agro.Identity.Application.UseCases.GetUserList
         public int PageSize { get; init; } = 10;
         public string SortBy { get; init; } = "id";
         public string SortDirection { get; init; } = "asc";
-        public string Filter { get; init; } = "";
+        public string? Filter { get; init; }
 
         private string? _cacheKey;
         public string GetCacheKey
