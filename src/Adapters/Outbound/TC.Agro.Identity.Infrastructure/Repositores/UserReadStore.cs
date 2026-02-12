@@ -1,3 +1,5 @@
+using TC.Agro.Identity.Infrastructure.Extensions;
+
 namespace TC.Agro.Identity.Infrastructure.Repositores
 {
     public sealed class UserReadStore : IUserReadStore
@@ -56,59 +58,15 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
             CancellationToken cancellationToken = default)
         {
             var baseQuery = _dbContext.Users
-                .AsNoTracking();
+                .AsNoTracking()
+                .ApplyTextFilter(query.Filter);
 
-            if (!string.IsNullOrWhiteSpace(query.Filter))
-            {
-                var pattern = $"%{query.Filter}%";
-
-                baseQuery = baseQuery.Where(u =>
-                    EF.Functions.ILike(u.Name, pattern) ||
-                    EF.Functions.ILike(u.Username, pattern) ||
-                    EF.Functions.ILike(u.Email.Value, pattern) ||
-                    EF.Functions.ILike(u.Role.Value, pattern)
-                );
-            }
-
-            // Get total count before pagination
             var totalCount = await baseQuery.CountAsync(cancellationToken).ConfigureAwait(false);
 
-            // sorting - IMPORTANT: Must have OrderBy before Skip/Take to avoid unpredictable results
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
-            {
-                var isAscending = string.Equals(query.SortDirection, "asc", StringComparison.OrdinalIgnoreCase);
-
-                baseQuery = query.SortBy.ToLowerInvariant() switch
-                {
-                    "id" => isAscending
-                        ? baseQuery.OrderBy(u => u.Id)
-                        : baseQuery.OrderByDescending(u => u.Id),
-                    "name" => isAscending
-                        ? baseQuery.OrderBy(u => u.Name)
-                        : baseQuery.OrderByDescending(u => u.Name),
-                    "username" => isAscending
-                        ? baseQuery.OrderBy(u => u.Username)
-                        : baseQuery.OrderByDescending(u => u.Username),
-                    "email" => isAscending
-                        ? baseQuery.OrderBy(u => u.Email.Value)
-                        : baseQuery.OrderByDescending(u => u.Email.Value),
-                    "role" => isAscending
-                        ? baseQuery.OrderBy(u => u.Role.Value)
-                        : baseQuery.OrderByDescending(u => u.Role.Value),
-                    "createdat" => isAscending
-                        ? baseQuery.OrderBy(u => u.CreatedAt)
-                        : baseQuery.OrderByDescending(u => u.CreatedAt),
-                    _ => baseQuery.OrderByDescending(u => u.CreatedAt)
-                };
-            }
-            else
-            {
-                baseQuery = baseQuery.OrderByDescending(u => u.CreatedAt);
-            }
+            baseQuery = baseQuery.ApplySorting(query.SortBy, query.SortDirection);
 
             var users = await baseQuery
-                .Skip((query.PageNumber - 1) * query.PageSize)
-                .Take(query.PageSize)
+                .ApplyPagination(query.PageNumber, query.PageSize)
                 .Select(u => new UserResponse
                 {
                     Id = u.Id,
