@@ -1,9 +1,9 @@
-﻿global using Ardalis.Result;
+global using System.Diagnostics.CodeAnalysis;
+global using Ardalis.Result;
 global using FastEndpoints;
 global using FluentValidation;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
-global using System.Diagnostics.CodeAnalysis;
 global using TC.Agro.Contracts.Events;
 global using TC.Agro.Contracts.Events.Identity;
 global using TC.Agro.Identity.Application.Abstractions;

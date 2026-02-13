@@ -1,6 +1,6 @@
-﻿global using Ardalis.Result;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Text.RegularExpressions;
+global using Ardalis.Result;
 global using TC.Agro.Identity.Domain.Abstractions;
 global using TC.Agro.Identity.Domain.ValueObjects;
 global using TC.Agro.SharedKernel.Domain.Aggregate;

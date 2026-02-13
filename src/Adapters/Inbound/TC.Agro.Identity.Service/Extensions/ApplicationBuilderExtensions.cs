@@ -1,5 +1,3 @@
-using TC.Agro.Identity.Service.Middleware;
-
 namespace TC.Agro.Identity.Service.Extensions
 {
     [ExcludeFromCodeCoverage]

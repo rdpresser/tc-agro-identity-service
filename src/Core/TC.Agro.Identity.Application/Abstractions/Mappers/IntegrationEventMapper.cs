@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Application.Abstractions.Mappers
+namespace TC.Agro.Identity.Application.Abstractions.Mappers
 {
     public static class IntegrationEventMapper
     {
@@ -25,12 +25,14 @@
             where TAggregate : BaseAggregateRoot
             where TIntegrationEvent : BaseIntegrationEvent
         {
-            if (mappings == null) yield break;
+            if (mappings == null)
+                yield break;
 
             foreach (var domainEvent in domainEvents)
             {
                 var type = domainEvent.GetType();
-                if (!mappings.TryGetValue(type, out var mapFunc)) continue;
+                if (!mappings.TryGetValue(type, out var mapFunc))
+                    continue;
 
                 var integrationEvent = mapFunc(domainEvent);
 
