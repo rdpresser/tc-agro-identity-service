@@ -5,7 +5,7 @@ namespace TC.Agro.Identity.Application.UseCases.DeactivateUser
         public static UserDeactivatedIntegrationEvent ToIntegrationEvent(UserDeactivatedDomainEvent domainEvent, UserAggregate aggregate)
         {
             return new UserDeactivatedIntegrationEvent(
-                Id: aggregate.Id,
+                OwnerId: aggregate.Id,
                 OccurredOn: domainEvent.OccurredOn);
         }
     }
