@@ -1,4 +1,4 @@
-﻿using CacheTagCatalog = TC.Agro.Identity.Application.Abstractions.CacheTags;
+using CacheTagCatalog = TC.Agro.Identity.Application.Abstractions.CacheTags;
 
 namespace TC.Agro.Identity.Application.UseCases.CreateUser
 {
@@ -11,7 +11,9 @@ namespace TC.Agro.Identity.Application.UseCases.CreateUser
     {
         public IReadOnlyCollection<string> CacheTags =>
         [
-            CacheTagCatalog.Users
+            CacheTagCatalog.Users,
+            CacheTagCatalog.UserList,
+            CacheTagCatalog.UserByEmail
         ];
     }
 }

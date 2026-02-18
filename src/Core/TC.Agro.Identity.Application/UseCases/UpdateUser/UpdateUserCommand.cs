@@ -10,7 +10,9 @@ namespace TC.Agro.Identity.Application.UseCases.UpdateUser
     {
         public IReadOnlyCollection<string> CacheTags =>
         [
-            CacheTagCatalog.Users
+            CacheTagCatalog.Users,
+            CacheTagCatalog.UserList,
+            CacheTagCatalog.UserByEmail
         ];
     }
 }

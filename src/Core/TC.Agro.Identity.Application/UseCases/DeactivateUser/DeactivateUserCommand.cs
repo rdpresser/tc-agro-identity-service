@@ -7,7 +7,9 @@ namespace TC.Agro.Identity.Application.UseCases.DeactivateUser
     {
         public IReadOnlyCollection<string> CacheTags =>
         [
-            CacheTagCatalog.Users
+            CacheTagCatalog.Users,
+            CacheTagCatalog.UserList,
+            CacheTagCatalog.UserByEmail
         ];
     }
 }
