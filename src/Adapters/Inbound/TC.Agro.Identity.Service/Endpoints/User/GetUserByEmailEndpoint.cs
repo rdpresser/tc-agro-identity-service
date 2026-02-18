@@ -15,7 +15,7 @@ namespace TC.Agro.Identity.Service.Endpoints.User
             // 🔥 Force FastEndpoints to bind from route params (not JSON body)
             RequestBinder(new RequestBinder<GetUserByEmailQuery>(BindingSource.RouteValues));
 
-            Roles(AppConstants.UserRole, AppConstants.AdminRole);
+            Roles(AppConstants.UserRole, AppConstants.AdminRole, AppConstants.ProducerRole);
             PreProcessor<QueryCachingPreProcessorBehavior<GetUserByEmailQuery, UserByEmailResponse>>();
             PostProcessor<QueryCachingPostProcessorBehavior<GetUserByEmailQuery, UserByEmailResponse>>();
 

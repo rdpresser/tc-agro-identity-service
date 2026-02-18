@@ -5,7 +5,7 @@ namespace TC.Agro.Identity.Service.Endpoints.User
         public override void Configure()
         {
             Put("user/{id:guid}");
-            Roles(AppConstants.AdminRole);
+            Roles(AppConstants.UserRole, AppConstants.AdminRole, AppConstants.ProducerRole);
             PostProcessor<LoggingCommandPostProcessorBehavior<UpdateUserCommand, UpdateUserResponse>>();
             PostProcessor<CacheInvalidationPostProcessorBehavior<UpdateUserCommand, UpdateUserResponse>>();
 

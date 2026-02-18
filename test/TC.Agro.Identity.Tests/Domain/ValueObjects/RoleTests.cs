@@ -7,7 +7,7 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
         [Theory]
         [InlineData("User")]
         [InlineData("Admin")]
-        [InlineData("Moderator")]
+        [InlineData("Producer")]
         [InlineData("user")]
         [InlineData("ADMIN")]
         public void Create_WithValidRole_ShouldSucceed(string roleValue)
@@ -42,7 +42,7 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             // Assert
             Role.User.Value.ShouldBe("User");
             Role.Admin.Value.ShouldBe("Admin");
-            Role.Moderator.Value.ShouldBe("Moderator");
+            Role.Producer.Value.ShouldBe("Producer");
         }
 
         [Fact]
@@ -51,8 +51,8 @@ namespace TC.Agro.Identity.Tests.Domain.ValueObjects
             // Assert
             Role.ValidRoles.ShouldContain("User");
             Role.ValidRoles.ShouldContain("Admin");
-            Role.ValidRoles.ShouldContain("Moderator");
-            Role.ValidRoles.Length.ShouldBe(3);
+            Role.ValidRoles.ShouldContain("Producer");
+            Role.ValidRoles.Count.ShouldBe(3);
         }
 
         [Fact]

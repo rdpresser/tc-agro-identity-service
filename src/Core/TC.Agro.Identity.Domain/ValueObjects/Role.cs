@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Domain.ValueObjects
+namespace TC.Agro.Identity.Domain.ValueObjects
 {
     /// <summary>
     /// Value Object representing a user role with validation and predefined roles.
@@ -10,8 +10,8 @@
         // Predefined roles
         public static readonly Role User = new("User");
         public static readonly Role Admin = new("Admin");
-        public static readonly Role Moderator = new("Moderator");
-        public static readonly string[] ValidRoles = { "User", "Admin", "Moderator" };
+        public static readonly Role Producer = new("Producer");
+        public static readonly IReadOnlySet<string> ValidRoles = new HashSet<string> { User.Value, Admin.Value, Producer.Value };
 
         public string Value { get; }
 

@@ -13,7 +13,7 @@ namespace TC.Agro.Identity.Service.Endpoints.User
             // 🔥 Force FastEndpoints to bind from query parameters
             RequestBinder(new RequestBinder<GetUserListQuery>(BindingSource.QueryParams));
 
-            Roles(AppConstants.AdminRole);
+            Roles(AppConstants.UserRole, AppConstants.AdminRole, AppConstants.ProducerRole);
             PreProcessor<QueryCachingPreProcessorBehavior<GetUserListQuery, PaginatedResponse<UserResponse>>>();
             PostProcessor<QueryCachingPostProcessorBehavior<GetUserListQuery, PaginatedResponse<UserResponse>>>();
 

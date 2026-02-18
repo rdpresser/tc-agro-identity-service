@@ -1,22 +1,30 @@
+using TC.Agro.Identity.Application.Abstractions;
 using TC.Agro.Identity.Infrastructure.Extensions;
+using TC.Agro.SharedKernel.Infrastructure.UserClaims;
 
 namespace TC.Agro.Identity.Infrastructure.Repositores
 {
     public sealed class UserReadStore : IUserReadStore
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IUserContext _userContext;
 
-        public UserReadStore(ApplicationDbContext dbContext)
+        public UserReadStore(ApplicationDbContext dbContext, IUserContext userContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
         }
+
+        private IQueryable<UserAggregate> FilteredDbSet => _userContext.Role == AppConstants.AdminRole
+            ? _dbContext.Users
+            : _dbContext.Users.Where(x => x.Id == _userContext.Id);
 
         public async Task<UserByEmailResponse?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return null;
 
-            return await _dbContext.Users
+            return await FilteredDbSet
                 .AsNoTracking()
                 .Where(u => EF.Functions.ILike(u.Email.Value, email))
                 .Select(u => new UserByEmailResponse
@@ -57,7 +65,7 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
             GetUserListQuery query,
             CancellationToken cancellationToken = default)
         {
-            var baseQuery = _dbContext.Users
+            var baseQuery = FilteredDbSet
                 .AsNoTracking()
                 .ApplyTextFilter(query.Filter);
 
