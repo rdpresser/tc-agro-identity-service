@@ -12,7 +12,7 @@ var app = builder.Build();
 if (!builder.Environment.IsEnvironment("Testing"))
 {
     await app.ApplyMigrations().ConfigureAwait(false);
-    await app.SeedInitialDataAsync().ConfigureAwait(false);
+    ////await app.SeedInitialDataAsync().ConfigureAwait(false);
 }
 
 // Get logger instance for Program and log telemetry configuration

@@ -40,6 +40,21 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 .ConfigureAwait(false);
         }
 
+        public async Task<bool> IsEmailAvailableAsync(string email, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            var normalizedEmail = email.Trim();
+
+            var emailAlreadyExists = await _dbContext.Users
+                .AsNoTracking()
+                .AnyAsync(u => EF.Functions.ILike(u.Email.Value, normalizedEmail), cancellationToken)
+                .ConfigureAwait(false);
+
+            return !emailAlreadyExists;
+        }
+
         public async Task<UserTokenProvider?> GetUserTokenInfoAsync(string email, string password, CancellationToken cancellationToken = default)
         {
             var userAggregate = await _dbContext.Users
