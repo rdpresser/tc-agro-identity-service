@@ -38,7 +38,7 @@ namespace TC.Agro.Identity.Application.UseCases.UpdateUser
                 return Result<UserAggregate>.Invalid(emailResult.ValidationErrors.ToArray());
             }
 
-            if (UserContext.Id != aggregate.Id && !UserContext.Role.Equals(AppConstants.AdminRole, StringComparison.OrdinalIgnoreCase))
+            if (UserContext.Id != aggregate.Id && !UserContext.IsAdmin)
             {
                 return Result<UserAggregate>.Unauthorized("You do not have permission to update this user.");
             }

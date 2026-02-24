@@ -13,7 +13,7 @@ namespace TC.Agro.Identity.Application.UseCases.GetUserByEmail
 
         public override async Task<Result<UserByEmailResponse>> ExecuteAsync(GetUserByEmailQuery command, CancellationToken ct = default)
         {
-            if (_userContext.Role != AppConstants.AdminRole
+            if (!_userContext.IsAdmin
                 && !_userContext.Email.Equals(command.Email, StringComparison.InvariantCultureIgnoreCase))
             {
                 AddError(x => x.Email, "You are not authorized to access this user.", $"{nameof(GetUserByEmailQuery.Email)}.NotAuthorized");
