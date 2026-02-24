@@ -104,5 +104,24 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
 
             return ([.. users], totalCount);
         }
+
+        public async Task<IReadOnlyList<ActiveUserReadModel>> GetActiveUsersForReSyncAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var users = await _dbContext.Users
+                .AsNoTracking()
+                .Where(u => u.IsActive && u.Role.Value != AppConstants.AdminRole)
+                .OrderBy(u => u.Name)
+                .Select(u => new ActiveUserReadModel(
+                    u.Id,
+                    u.Name,
+                    u.Email.Value,
+                    u.Username,
+                    u.Role.Value))
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return [.. users];
+        }
     }
 }

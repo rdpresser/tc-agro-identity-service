@@ -6,5 +6,6 @@ namespace TC.Agro.Identity.Application.Abstractions.Ports
         Task<bool> IsEmailAvailableAsync(string email, CancellationToken cancellationToken = default);
         Task<UserTokenProvider?> GetUserTokenInfoAsync(string email, string password, CancellationToken cancellationToken = default);
         Task<(IReadOnlyList<UserResponse> Users, int TotalCount)> GetUserListAsync(GetUserListQuery query, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<ActiveUserReadModel>> GetActiveUsersForReSyncAsync(CancellationToken cancellationToken = default);
     }
 }

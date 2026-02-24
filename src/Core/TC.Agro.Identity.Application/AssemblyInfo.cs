@@ -27,3 +27,4 @@ global using static TC.Agro.Identity.Domain.Aggregates.UserAggregate;
 using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: InternalsVisibleTo("TC.Agro.Identity.Unit.Tests")]
+[assembly: InternalsVisibleTo("TC.Agro.Identity.Tests")]
