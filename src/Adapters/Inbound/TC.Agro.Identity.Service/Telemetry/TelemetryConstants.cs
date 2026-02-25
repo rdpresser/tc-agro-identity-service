@@ -10,7 +10,7 @@ namespace TC.Agro.Identity.Service.Telemetry
 
         // Service Identity - Centralized for consistency (matches Docker Compose)
         public const string ServiceName = "tc-agro-identity";
-        public const string ServiceNamespace = "tcagro";
+        public const string ServiceNamespace = "tc-agro";
 
         // Meter Names for OpenTelemetry Metrics
         public const string IdentityMeterName = "TC.Agro.Identity.Service.Metrics";
