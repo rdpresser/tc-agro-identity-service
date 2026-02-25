@@ -1,5 +1,7 @@
 # 🔐 TC Agro Identity Service
 
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet) ![CI](https://img.shields.io/github/actions/workflow/status/rdpresser/tc-agro-identity-service/identity-ci.yml?style=flat-square&logo=github&label=Build) ![Tests](https://img.shields.io/badge/Tests-26%20Passed-success?style=flat-square&logo=xunit) ![Coverage](https://img.shields.io/badge/Coverage-82%25%20(Core)-green?style=flat-square&logo=codecov) ![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)
+
 Authentication, authorization, and user management for agricultural monitoring platform.
 
 ## 🎯 Purpose
