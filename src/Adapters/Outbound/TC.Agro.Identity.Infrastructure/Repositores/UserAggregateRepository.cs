@@ -19,6 +19,17 @@ namespace TC.Agro.Identity.Infrastructure.Repositores
                 .ConfigureAwait(false);
         }
 
+        public async Task<UserAggregate?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return null;
+
+            return await DbSet
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(userAggregate => EF.Functions.ILike(userAggregate.Email.Value, email), cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         public async Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken = default)
         {
             return await DbSet

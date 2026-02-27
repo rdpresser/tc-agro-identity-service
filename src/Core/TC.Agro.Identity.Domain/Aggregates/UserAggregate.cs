@@ -74,6 +74,25 @@ namespace TC.Agro.Identity.Domain.Aggregates
             return Result.Success();
         }
 
+        public Result ChangePassword(string newPassword)
+        {
+            var passwordResult = Password.Create(newPassword);
+            if (!passwordResult.IsSuccess)
+            {
+                return Result.Invalid(passwordResult.ValidationErrors.ToArray());
+            }
+
+            var newPasswordHash = passwordResult.Value;
+            if (PasswordHash.Verify(newPassword))
+            {
+                return Result.Invalid(new ValidationError("Password.SameAsCurrent", "New password must be different from the current password."));
+            }
+
+            var @event = new UserPasswordChangedDomainEvent(Id, newPasswordHash.Hash, DateTimeOffset.UtcNow);
+            ApplyEvent(@event);
+            return Result.Success();
+        }
+
         #endregion
 
         #region Domain Events Apply
@@ -104,6 +123,12 @@ namespace TC.Agro.Identity.Domain.Aggregates
             SetUpdatedAt(@event.OccurredOn);
         }
 
+        public void Apply(UserPasswordChangedDomainEvent @event)
+        {
+            PasswordHash = Password.FromHash(@event.NewPassword).Value;
+            SetUpdatedAt(@event.OccurredOn);
+        }
+
         private void ApplyEvent(BaseDomainEvent @event)
         {
             AddNewEvent(@event);
@@ -115,7 +140,9 @@ namespace TC.Agro.Identity.Domain.Aggregates
                 case UserUpdatedDomainEvent updatedEvent:
                     Apply(updatedEvent);
                     break;
-                ////case UserPasswordChangedDomainEvent passwordChangedEvent: Apply(passwordChangedEvent); break;
+                case UserPasswordChangedDomainEvent passwordChangedEvent:
+                    Apply(passwordChangedEvent);
+                    break;
                 ////case UserRoleChangedDomainEvent roleChangedEvent: Apply(roleChangedEvent); break;
                 ////case UserActivatedDomainEvent activatedEvent: Apply(activatedEvent); break;
                 case UserDeactivatedDomainEvent deactivatedEvent:
