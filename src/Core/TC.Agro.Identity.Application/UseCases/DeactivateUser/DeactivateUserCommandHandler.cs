@@ -63,12 +63,18 @@ namespace TC.Agro.Identity.Application.UseCases.DeactivateUser
                     mappings: new Dictionary<Type, Func<BaseDomainEvent, UserDeactivatedIntegrationEvent>>
                     {
                         { typeof(UserDeactivatedDomainEvent), e => DeactivateUserMapper.ToIntegrationEvent((UserDeactivatedDomainEvent)e, aggregate) }
-                    });
+                    })
+                .ToList();
 
-            foreach (var evt in integrationEvents)
+            if (integrationEvents.Count > 0)
             {
-                await Outbox.EnqueueAsync(evt, ct).ConfigureAwait(false);
+                await Outbox.EnqueueAsync(integrationEvents, ct).ConfigureAwait(false);
             }
+
+            _logger.LogInformation(
+                "Enqueued {Count} integration events for user {UserId}",
+                integrationEvents.Count,
+                aggregate.Id);
 
             _logger.LogInformation(
                 "User {UserId} deactivated successfully by {CurrentUserId}",

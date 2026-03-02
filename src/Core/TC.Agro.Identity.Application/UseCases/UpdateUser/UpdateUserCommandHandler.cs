@@ -67,12 +67,18 @@ namespace TC.Agro.Identity.Application.UseCases.UpdateUser
                     mappings: new Dictionary<Type, Func<BaseDomainEvent, UserUpdatedIntegrationEvent>>
                     {
                         { typeof(UserUpdatedDomainEvent), e => UpdateUserMapper.ToIntegrationEvent((UserUpdatedDomainEvent)e) }
-                    });
+                    })
+                .ToList();
 
-            foreach (var evt in integrationEvents)
+            if (integrationEvents.Count > 0)
             {
-                await Outbox.EnqueueAsync(evt, ct).ConfigureAwait(false);
+                await Outbox.EnqueueAsync(integrationEvents, ct).ConfigureAwait(false);
             }
+
+            _logger.LogInformation(
+                "Enqueued {Count} integration events for user {UserId}",
+                integrationEvents.Count,
+                aggregate.Id);
 
             _logger.LogInformation(
                 "User {UserId} updated successfully by {CurrentUserId}",
