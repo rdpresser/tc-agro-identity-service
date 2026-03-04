@@ -545,6 +545,9 @@ docker stop <container-id>
 ### Testing
 
 ```bash
+# Build solution/service
+dotnet build
+
 # Run all tests
 dotnet test
 
@@ -610,6 +613,6 @@ dotnet test --filter "FullyQualifiedName~UserServiceTests.RegisterAsync_ValidReq
 ---
 
 > **Last update:** March 4, 2026  
-> **Version:** 1.1  
-> **Key Addition:** Mandatory build/unit-test/coverage protocol + frontend parity guidance
+> **Version:** 1.2  
+> **Key Addition:** Instruction cleanup + explicit build command + mandatory build/unit-test/coverage and frontend parity guidance
 > Use these instructions to guide code generation in the TC Agro Identity Service project.
