@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Application.UseCases.CreateUser
+namespace TC.Agro.Identity.Application.UseCases.CreateUser
 {
     internal sealed class CreateUserCommandHandler
         : BaseCommandHandler<CreateUserCommand, CreateUserResponse, UserAggregate, IUserAggregateRepository>
@@ -45,7 +45,10 @@
 
             if (integrationEvents.Count > 0)
             {
-                await Outbox.EnqueueAsync(integrationEvents, ct).ConfigureAwait(false);
+                foreach (var evt in integrationEvents)
+                {
+                    await Outbox.EnqueueAsync(evt, ct).ConfigureAwait(false);
+                }
             }
 
             _logger.LogInformation(
