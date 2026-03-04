@@ -453,6 +453,11 @@ public class UserServiceTests
 - Write **unit tests** for business logic
 - Use **Ardalis.Result** pattern for success/error handling
 - Follow **Central Package Management** (no versions in .csproj)
+- Run `dotnet build` after code changes and ensure green build
+- Run unit tests after code changes (targeted first, full suite when relevant)
+- Add/update unit tests whenever changed behavior is not covered by unit tests
+- Ensure modified/new code paths have automated test coverage before closing a task
+- For frontend changes in parent project (`poc/frontend` or `poc/mobile`), follow Frontend Test Parity Protocol
 
 ### ❌ NEVER Do:
 
@@ -570,6 +575,21 @@ dotnet test --filter "FullyQualifiedName~UserServiceTests.RegisterAsync_ValidReq
   - Exception: Chat responses follow user's language (see above)
   - This applies to: C# code/comments, variable names, file/folder names, documentation
 
+### Build and Unit Test Validation Protocol (MANDATORY)
+
+- **Build rule:** After code changes, run the relevant build command and ensure success.
+- **Unit test rule:** Run unit tests after changes (targeted first, broader suite when relevant).
+- **Coverage rule:** If changed behavior is not covered by unit tests, add/update tests in the same task.
+- **Completion rule:** Do not close tasks without automated coverage for modified/new behavior.
+
+### Frontend Test Parity Protocol (MANDATORY, when applicable)
+
+- **Parity-first rule:** Keep frontend implementation and automated tests aligned at all times.
+- **Change review rule:** For every frontend change, explicitly validate whether a new test is required.
+- **Coverage rule:** If a change affects user flows, visible state, or validation, add/update tests in the same task.
+- **Execution rule:** After frontend edits, always recommend running tests (targeted command + full suite when relevant).
+- **Parity target:** Maintain parity between allowed screens/flows and automated test coverage.
+
 ---
 
 ## 📚 References
@@ -589,6 +609,7 @@ dotnet test --filter "FullyQualifiedName~UserServiceTests.RegisterAsync_ValidReq
 
 ---
 
-> **Last update:** January 2026  
-> **Version:** 1.0  
+> **Last update:** March 4, 2026  
+> **Version:** 1.1  
+> **Key Addition:** Mandatory build/unit-test/coverage protocol + frontend parity guidance
 > Use these instructions to guide code generation in the TC Agro Identity Service project.
