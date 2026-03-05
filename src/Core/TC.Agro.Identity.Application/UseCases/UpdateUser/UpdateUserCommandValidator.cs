@@ -22,10 +22,10 @@ namespace TC.Agro.Identity.Application.UseCases.UpdateUser
                     .WithErrorCode($"{nameof(UpdateUserCommand.Name)}.MinimumLength")
                 .MaximumLength(100)
                     .WithMessage("Name must not exceed 100 characters.")
-                    .WithErrorCode($"{nameof(UpdateUserCommand.Name)}.MaximumLength")
-                .Matches(@"^[a-zA-Z ]+$")
-                    .WithMessage("Name can only contain letters and spaces.")
-                    .WithErrorCode($"{nameof(UpdateUserCommand.Name)}.InvalidCharacters");
+                    .WithErrorCode($"{nameof(UpdateUserCommand.Name)}.MaximumLength");
+            ////.Matches(@"^[a-zA-Z ]+$")
+            ////    .WithMessage("Name can only contain letters and spaces.")
+            ////    .WithErrorCode($"{nameof(UpdateUserCommand.Name)}.InvalidCharacters");
             #endregion
 
             #region Email | Validation Rules
