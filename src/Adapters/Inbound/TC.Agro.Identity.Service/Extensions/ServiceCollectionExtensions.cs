@@ -93,7 +93,15 @@ namespace TC.Agro.Identity.Service.Extensions
         {
             services.AddFastEndpoints(dicoveryOptions =>
             {
-                dicoveryOptions.Assemblies = [typeof(Application.DependencyInjection).Assembly];
+                dicoveryOptions.DisableAutoDiscovery = true;
+                dicoveryOptions.Assemblies =
+                [
+                    typeof(Application.DependencyInjection).Assembly,
+                    typeof(Program).Assembly
+                ];
+                dicoveryOptions.Filter = type =>
+                    type.Assembly == typeof(Application.DependencyInjection).Assembly ||
+                    type.Assembly == typeof(Program).Assembly;
             })
             .SwaggerDocument(o =>
             {

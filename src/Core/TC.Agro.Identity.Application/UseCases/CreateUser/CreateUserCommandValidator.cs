@@ -14,10 +14,10 @@
                 .WithErrorCode($"{nameof(CreateUserCommand.Name)}.MinimumLength")
             .MaximumLength(100)
                 .WithMessage("Name must not exceed 100 characters.")
-                .WithErrorCode($"{nameof(CreateUserCommand.Name)}.MaximumLength")
-            .Matches(@"^[a-zA-Z ]+$")
-                .WithMessage("Name can only contain letters and spaces.")
-                .WithErrorCode($"{nameof(CreateUserCommand.Name)}.InvalidCharacters");
+                .WithErrorCode($"{nameof(CreateUserCommand.Name)}.MaximumLength");
+            //// .Matches(@"^[a-zA-Z ]+$")
+            ////     .WithMessage("Name can only contain letters and spaces.")
+            ////     .WithErrorCode($"{nameof(CreateUserCommand.Name)}.InvalidCharacters");
 
             #endregion
 
