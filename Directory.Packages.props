@@ -6,7 +6,7 @@
     <!-- ========================= -->
     <!-- Code Quality / Analyzers -->
     <!-- ========================= -->
-    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.19.0.132793">
+    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.20.0.135146">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </GlobalPackageReference>
@@ -42,7 +42,7 @@
     <!-- ========================= -->
     <!-- Wolverine -->
     <!-- ========================= -->
-    <PackageVersion Include="WolverineFx.Postgresql" Version="5.16.2" />
+    <PackageVersion Include="WolverineFx.Postgresql" Version="5.17.0" />
     <PackageVersion Include="JasperFx.RuntimeCompiler" Version="4.3.2" />
     <PackageVersion Include="Microsoft.CodeAnalysis" Version="5.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
