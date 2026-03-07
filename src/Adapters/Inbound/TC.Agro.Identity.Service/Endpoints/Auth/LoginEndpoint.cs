@@ -29,7 +29,6 @@
         public override async Task HandleAsync(LoginUserCommand req, CancellationToken ct)
         {
             var response = await req.ExecuteAsync(ct: ct).ConfigureAwait(false);
-
             await MatchResultAsync(response, ct).ConfigureAwait(false);
         }
     }

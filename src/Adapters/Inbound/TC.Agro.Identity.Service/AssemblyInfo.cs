@@ -9,7 +9,6 @@ global using FluentValidation.Resources;
 global using HealthChecks.UI.Client;
 global using JasperFx.Resources;
 global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Caching.StackExchangeRedis;
 global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using Newtonsoft.Json.Converters;
@@ -30,7 +29,6 @@ global using TC.Agro.Identity.Application.UseCases.GetUserList;
 global using TC.Agro.Identity.Application.UseCases.LoginUser;
 global using TC.Agro.Identity.Application.UseCases.UpdateUser;
 global using TC.Agro.Identity.Infrastructure;
-global using TC.Agro.Identity.Infrastructure.Extensions;
 // TC.Agro.Identity.Service namespaces
 global using TC.Agro.Identity.Service.Extensions;
 global using TC.Agro.Identity.Service.Telemetry;
