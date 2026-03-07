@@ -9,7 +9,6 @@
 
 # Visual Studio
 .vs/
-.vscode/
 
 # GitHub
 .github/workflows_ref/
