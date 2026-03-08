@@ -1,11 +1,17 @@
 using TC.Agro.Identity.Application.Abstractions.Ports;
 using TC.Agro.Identity.Application.UseCases.CheckEmailAvailability;
+using TC.Agro.Identity.Tests.TestHelpers;
 
 namespace TC.Agro.Identity.Tests.Application.UseCases.CheckEmailAvailability;
 
 public sealed class CheckEmailAvailabilityQueryHandlerTests
 {
     private readonly IUserReadStore _readStore = A.Fake<IUserReadStore>();
+
+    public CheckEmailAvailabilityQueryHandlerTests()
+    {
+        FastEndpointsTestBootstrap.EnsureInitialized();
+    }
 
     [Theory]
     [InlineData(true)]

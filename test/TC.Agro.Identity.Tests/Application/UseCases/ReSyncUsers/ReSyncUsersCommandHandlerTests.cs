@@ -1,10 +1,9 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Ardalis.Result;
-using FastEndpoints;
 using TC.Agro.Contracts.Events.Identity;
 using TC.Agro.Identity.Application.Abstractions.Ports;
 using TC.Agro.Identity.Application.UseCases.ReSyncUsers;
+using TC.Agro.Identity.Tests.TestHelpers;
 using TC.Agro.SharedKernel.Infrastructure.Messaging;
 using TC.Agro.SharedKernel.Infrastructure.UserClaims;
 using Wolverine;
@@ -13,15 +12,9 @@ namespace TC.Agro.Identity.Tests.Application.UseCases.ReSyncUsers
 {
     public sealed class ReSyncUsersCommandHandlerTests
     {
-        static ReSyncUsersCommandHandlerTests()
-        {
-            var services = new ServiceCollection();
-            Factory.AddServicesForUnitTesting(services);
-        }
-
         public ReSyncUsersCommandHandlerTests()
         {
-            Factory.RegisterTestServices(_ => { });
+            FastEndpointsTestBootstrap.EnsureInitialized();
         }
 
         private readonly IUserReadStore _userReadStore = A.Fake<IUserReadStore>();
