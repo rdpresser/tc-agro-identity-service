@@ -6,23 +6,21 @@ namespace TC.Agro.Identity.Tests.TestHelpers;
 
 internal static class FastEndpointsTestBootstrap
 {
-    private static readonly object SyncRoot = new();
+    private static int _initialized;
 
     public static void EnsureInitialized()
     {
-        lock (SyncRoot)
+        if (Interlocked.Exchange(ref _initialized, 1) == 0)
         {
-            // Reinitialize FastEndpoints unit-test services on every call so
-            // tests remain isolated even if a previous test disposed the provider.
-            InitializeFactory();
+            var services = new ServiceCollection();
+            services.AddSingleton<ICacheService, NoOpCacheService>();
+            Factory.AddServicesForUnitTesting(services);
         }
-    }
 
-    private static void InitializeFactory()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<ICacheService, NoOpCacheService>();
-        Factory.AddServicesForUnitTesting(services);
+        Factory.RegisterTestServices(testServices =>
+        {
+            testServices.AddSingleton<ICacheService, NoOpCacheService>();
+        });
     }
 
     private sealed class NoOpCacheService : ICacheService
