@@ -16,9 +16,7 @@ namespace TC.Agro.Identity.Service.Endpoints.User
             RequestBinder(new RequestBinder<GetUserByEmailQuery>(BindingSource.RouteValues));
 
             Roles(AppConstants.UserRole, AppConstants.AdminRole, AppConstants.ProducerRole);
-            PreProcessor<QueryCachingPreProcessorBehavior<GetUserByEmailQuery, UserByEmailResponse>>();
-            PostProcessor<QueryCachingPostProcessorBehavior<GetUserByEmailQuery, UserByEmailResponse>>();
-
+            this.AddQueryCachingIfNotTesting();
             Description(x => x.Produces<UserByEmailResponse>(200)
                 .ProducesProblemDetails()
                 .Produces((int)HttpStatusCode.NotFound)
@@ -57,3 +55,4 @@ namespace TC.Agro.Identity.Service.Endpoints.User
         }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿namespace TC.Agro.Identity.Service.Endpoints.Auth
+namespace TC.Agro.Identity.Service.Endpoints.Auth
 {
     public sealed class CreateUserEndpoint : BaseApiEndpoint<CreateUserCommand, CreateUserResponse>
     {
@@ -7,8 +7,7 @@
             Post("register");
             RoutePrefixOverride("auth");
             PostProcessor<LoggingCommandPostProcessorBehavior<CreateUserCommand, CreateUserResponse>>();
-            PostProcessor<CacheInvalidationPostProcessorBehavior<CreateUserCommand, CreateUserResponse>>();
-
+            this.AddCacheInvalidationIfNotTesting();
             AllowAnonymous();
             Description(
                 x => x.Produces<CreateUserResponse>(201)
@@ -41,3 +40,4 @@
         }
     }
 }
+

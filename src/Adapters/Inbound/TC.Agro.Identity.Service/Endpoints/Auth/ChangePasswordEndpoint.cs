@@ -9,8 +9,7 @@ namespace TC.Agro.Identity.Service.Endpoints.Auth
             Post("change-password");
             RoutePrefixOverride("auth");
             PostProcessor<LoggingCommandPostProcessorBehavior<ChangePasswordCommand, ChangePasswordResponse>>();
-            PostProcessor<CacheInvalidationPostProcessorBehavior<ChangePasswordCommand, ChangePasswordResponse>>();
-
+            this.AddCacheInvalidationIfNotTesting();
             AllowAnonymous();
             Description(
                 x => x.Produces<ChangePasswordResponse>(200)
@@ -36,3 +35,4 @@ namespace TC.Agro.Identity.Service.Endpoints.Auth
         }
     }
 }
+

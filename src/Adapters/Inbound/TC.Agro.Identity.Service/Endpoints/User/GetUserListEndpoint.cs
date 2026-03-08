@@ -14,9 +14,7 @@ namespace TC.Agro.Identity.Service.Endpoints.User
             RequestBinder(new RequestBinder<GetUserListQuery>(BindingSource.QueryParams));
 
             Roles(AppConstants.UserRole, AppConstants.AdminRole, AppConstants.ProducerRole);
-            PreProcessor<QueryCachingPreProcessorBehavior<GetUserListQuery, PaginatedResponse<UserResponse>>>();
-            PostProcessor<QueryCachingPostProcessorBehavior<GetUserListQuery, PaginatedResponse<UserResponse>>>();
-
+            this.AddQueryCachingIfNotTesting();
             Description(
                 x => x.Produces<PaginatedResponse<UserResponse>>(200)
                       .ProducesProblemDetails()
@@ -74,3 +72,4 @@ namespace TC.Agro.Identity.Service.Endpoints.User
         }
     }
 }
+

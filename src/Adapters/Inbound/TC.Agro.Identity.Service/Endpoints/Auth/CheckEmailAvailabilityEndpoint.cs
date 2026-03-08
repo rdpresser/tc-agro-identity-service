@@ -11,9 +11,7 @@ namespace TC.Agro.Identity.Service.Endpoints.Auth
 
             RequestBinder(new RequestBinder<CheckEmailAvailabilityQuery>(BindingSource.RouteValues));
 
-            PreProcessor<QueryCachingPreProcessorBehavior<CheckEmailAvailabilityQuery, CheckEmailAvailabilityResponse>>();
-            PostProcessor<QueryCachingPostProcessorBehavior<CheckEmailAvailabilityQuery, CheckEmailAvailabilityResponse>>();
-
+            this.AddQueryCachingIfNotTesting();
             AllowAnonymous();
 
             Description(x => x.Produces<CheckEmailAvailabilityResponse>(200)
@@ -42,3 +40,4 @@ namespace TC.Agro.Identity.Service.Endpoints.Auth
         }
     }
 }
+

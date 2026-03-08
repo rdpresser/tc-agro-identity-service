@@ -7,8 +7,7 @@ namespace TC.Agro.Identity.Service.Endpoints.User
             Put("user/{id:guid}");
             Roles(AppConstants.UserRole, AppConstants.AdminRole, AppConstants.ProducerRole);
             PostProcessor<LoggingCommandPostProcessorBehavior<UpdateUserCommand, UpdateUserResponse>>();
-            PostProcessor<CacheInvalidationPostProcessorBehavior<UpdateUserCommand, UpdateUserResponse>>();
-
+            this.AddCacheInvalidationIfNotTesting();
             Description(x => x.Produces<UpdateUserResponse>(200)
                 .ProducesProblemDetails(400)
                 .ProducesProblemDetails(404)
@@ -43,3 +42,4 @@ namespace TC.Agro.Identity.Service.Endpoints.User
         }
     }
 }
+

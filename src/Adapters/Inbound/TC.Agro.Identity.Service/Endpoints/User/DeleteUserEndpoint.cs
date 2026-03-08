@@ -7,8 +7,7 @@ namespace TC.Agro.Identity.Service.Endpoints.User
             Delete("user/{id}");
             Roles(AppConstants.AdminRole);
             PostProcessor<LoggingCommandPostProcessorBehavior<DeactivateUserCommand, DeactivateUserResponse>>();
-            PostProcessor<CacheInvalidationPostProcessorBehavior<DeactivateUserCommand, DeactivateUserResponse>>();
-
+            this.AddCacheInvalidationIfNotTesting();
             // 🔥 Force FastEndpoints to bind from route params (not JSON body)
             RequestBinder(new RequestBinder<DeactivateUserCommand>(BindingSource.RouteValues));
 
@@ -38,3 +37,4 @@ namespace TC.Agro.Identity.Service.Endpoints.User
         }
     }
 }
+
