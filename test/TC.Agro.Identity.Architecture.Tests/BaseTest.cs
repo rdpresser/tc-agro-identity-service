@@ -2,7 +2,6 @@ using System.Reflection;
 using TC.Agro.Identity.Application.UseCases.CreateUser;
 using TC.Agro.Identity.Domain.Aggregates;
 using TC.Agro.Identity.Infrastructure;
-using TC.Agro.Identity.Service;
 
 namespace TC.Agro.Identity.Architecture.Tests;
 

@@ -23,11 +23,13 @@
     </PackageReference>
     <PackageReference Include="Shouldly" />
     <PackageReference Include="FakeItEasy" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Core\TC.Agro.Identity.Domain\TC.Agro.Identity.Domain.csproj" />
     <ProjectReference Include="..\..\src\Core\TC.Agro.Identity.Application\TC.Agro.Identity.Application.csproj" />
+    <ProjectReference Include="..\..\src\Adapters\Outbound\TC.Agro.Identity.Infrastructure\TC.Agro.Identity.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Adapters\Inbound\TC.Agro.Identity.Service\TC.Agro.Identity.Service.csproj" />
   </ItemGroup>
 

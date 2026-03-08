@@ -6,7 +6,6 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using TC.Agro.Contracts.Events;
 global using TC.Agro.Contracts.Events.Identity;
-global using TC.Agro.Identity.Application.Abstractions;
 global using TC.Agro.Identity.Application.Abstractions.Mappers;
 global using TC.Agro.Identity.Application.Abstractions.Ports;
 global using TC.Agro.Identity.Application.UseCases.GetUserByEmail;
